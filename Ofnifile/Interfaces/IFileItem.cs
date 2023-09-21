@@ -4,5 +4,5 @@ namespace Ofnifile.Interfaces;
 
 public interface IFileItem : IBaseExplorerItem
 {
-    FileInfo Info { get; }
+    FileInfo Info { get; init; }
 }

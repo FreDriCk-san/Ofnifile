@@ -8,5 +8,4 @@ public interface IBaseExplorerItem : IDisposable
     bool Copy();
     bool Delete();
     bool Rename();
-    bool ShowProperties();
 }

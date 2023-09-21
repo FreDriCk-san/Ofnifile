@@ -1,9 +1,10 @@
 ﻿using ReactiveUI;
 
-namespace Ofnifile.ViewModels
+namespace Ofnifile.ViewModels;
+
+public class MainWindowViewModel : ReactiveObject
 {
-    public class MainWindowViewModel : ReactiveObject
-    {
-        public string Greeting => "Welcome to Avalonia!";
-    }
+    public string Greeting => "Welcome to Avalonia!";
+
+    // TODO: Think about ViewModel
 }

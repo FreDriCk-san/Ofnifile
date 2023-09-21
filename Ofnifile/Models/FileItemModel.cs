@@ -5,7 +5,12 @@ namespace Ofnifile.Models;
 
 public class FileItemModel : IFileItem
 {
-    public FileInfo Info => throw new System.NotImplementedException();
+    public FileInfo Info { get; init; }
+
+    public FileItemModel(string filePath)
+    {
+        Info = new FileInfo(filePath);
+    }
 
     public bool Copy()
     {
@@ -23,11 +28,6 @@ public class FileItemModel : IFileItem
     }
 
     public bool Rename()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public bool ShowProperties()
     {
         throw new System.NotImplementedException();
     }

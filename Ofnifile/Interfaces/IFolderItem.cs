@@ -4,5 +4,5 @@ namespace Ofnifile.Interfaces;
 
 public interface IFolderItem : IBaseExplorerItem
 {
-    DirectoryInfo Info { get; }
+    DirectoryInfo Info { get; init; }
 }

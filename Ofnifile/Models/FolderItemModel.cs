@@ -5,7 +5,12 @@ namespace Ofnifile.Models;
 
 public class FolderItemModel : IFolderItem
 {
-    public DirectoryInfo Info => throw new System.NotImplementedException();
+    public DirectoryInfo Info { get; init; }
+
+    public FolderItemModel(string folderPath)
+    {
+        Info = new DirectoryInfo(folderPath);
+    }
 
     public bool Copy()
     {
@@ -23,11 +28,6 @@ public class FolderItemModel : IFolderItem
     }
 
     public bool Rename()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public bool ShowProperties()
     {
         throw new System.NotImplementedException();
     }
