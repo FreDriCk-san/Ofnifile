@@ -9,7 +9,7 @@
         Title="Ofnifile">
 
     <Design.DataContext>
-        <vm:MainWindowViewModel/>
+        <vm:MainWindowVM/>
     </Design.DataContext>
 
     <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>

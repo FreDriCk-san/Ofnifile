@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using Ofnifile.ViewModels;
+using ReactiveUI;
 using System;
 
 namespace Ofnifile
@@ -22,7 +22,7 @@ namespace Ofnifile
 
         public bool Match(object data)
         {
-            return data is ViewModelBase;
+            return data is ReactiveObject;
         }
     }
 }
