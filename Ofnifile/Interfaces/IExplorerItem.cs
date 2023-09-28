@@ -43,14 +43,14 @@ public interface IExplorerItem : IDisposable, IEditableObject
     bool IsExpanded { get; set; }
 
     /// <summary>
-    /// Item is directory
-    /// </summary>
-    bool IsDirectory { get; }
-
-    /// <summary>
     /// Item is hidden
     /// </summary>
     bool IsHidden { get; }
+
+    /// <summary>
+    /// Item is directory
+    /// </summary>
+    bool IsDirectory { get; }
 
     /// <summary>
     /// Inner child items

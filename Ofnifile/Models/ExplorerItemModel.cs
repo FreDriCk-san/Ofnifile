@@ -21,6 +21,7 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
     private DateTimeOffset _created;
     private bool _hasChildren;
     private bool _isExpanded;
+    private bool _isHidden;
     private AvaloniaList<ExplorerItemModel>? _children;
 
     public string Path
@@ -65,8 +66,13 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
         set => this.RaiseAndSetIfChanged(ref _isExpanded, value); 
     }
 
+    public bool IsHidden
+    {
+        get => _isHidden;
+        set => this.RaiseAndSetIfChanged(ref _isHidden, value);
+    }
+
     public bool IsDirectory { get; }
-    public bool IsHidden { get; }
 
     public IReadOnlyList<IExplorerItem>? Children => _children ??= LoadChildren();
 
@@ -125,6 +131,7 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
                         child.Size = directoryInfo.Size();
                         child.Modified = directoryInfo.LastWriteTimeUtc;
                         child.Created = directoryInfo.CreationTime;
+                        child.IsHidden = directoryInfo.Attributes.HasFlag(FileAttributes.Hidden);
                     }
                     else
                     {
@@ -132,6 +139,7 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
                         child.Size = fileInfo.Length;
                         child.Modified = fileInfo.LastWriteTimeUtc;
                         child.Created = fileInfo.CreationTime;
+                        child.IsHidden = fileInfo.Attributes.HasFlag(FileAttributes.Hidden);
                     }
                 }
             });
