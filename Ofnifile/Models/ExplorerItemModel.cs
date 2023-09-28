@@ -84,6 +84,7 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
             Size = directoryInfo.Size();
             Modified = directoryInfo.LastWriteTimeUtc;
             Created = directoryInfo.CreationTime;
+            IsHidden = directoryInfo.Attributes.HasFlag(FileAttributes.Hidden);
         }
         else
         {
@@ -91,6 +92,7 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
             Size = fileInfo.Length;
             Modified = fileInfo.LastWriteTimeUtc;
             Created = fileInfo.CreationTime;
+            IsHidden = fileInfo.Attributes.HasFlag(FileAttributes.Hidden);
         }
 
         _watcher = new FileSystemWatcher
