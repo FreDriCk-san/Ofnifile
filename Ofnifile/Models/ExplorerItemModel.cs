@@ -87,26 +87,34 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
         if (isDirectory)
         {
             var directoryInfo = new DirectoryInfo(path);
-            Size = directoryInfo.Size();
-            Modified = directoryInfo.LastWriteTimeUtc;
+            //Size = directoryInfo.Size();
+            Modified = directoryInfo.LastWriteTime;
             Created = directoryInfo.CreationTime;
             IsHidden = directoryInfo.Attributes.HasFlag(FileAttributes.Hidden);
+
+            _watcher = new FileSystemWatcher
+            {
+                Path = _path,
+                NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.Size | NotifyFilters.LastWrite,
+                EnableRaisingEvents = true,
+            };
         }
         else
         {
             var fileInfo = new FileInfo(path);
             Size = fileInfo.Length;
-            Modified = fileInfo.LastWriteTimeUtc;
+            Modified = fileInfo.LastWriteTime;
             Created = fileInfo.CreationTime;
             IsHidden = fileInfo.Attributes.HasFlag(FileAttributes.Hidden);
-        }
 
-        _watcher = new FileSystemWatcher
-        {
-            Path = _path,
-            NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.Size | NotifyFilters.LastWrite,
-            EnableRaisingEvents = true,
-        };
+            _watcher = new FileSystemWatcher
+            {
+                Path = System.IO.Path.GetDirectoryName(path),
+                Filter = System.IO.Path.GetFileName(path),
+                NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.Size | NotifyFilters.LastWrite,
+                EnableRaisingEvents = true,
+            };
+        }
 
         _watcher.Changed += ItemChanged;
         _watcher.Created += ItemCreated;
@@ -128,8 +136,8 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
                     if (child.IsDirectory)
                     {
                         var directoryInfo = new DirectoryInfo(e.FullPath);
-                        child.Size = directoryInfo.Size();
-                        child.Modified = directoryInfo.LastWriteTimeUtc;
+                        //child.Size = directoryInfo.Size();
+                        child.Modified = directoryInfo.LastWriteTime;
                         child.Created = directoryInfo.CreationTime;
                         child.IsHidden = directoryInfo.Attributes.HasFlag(FileAttributes.Hidden);
                     }
@@ -137,7 +145,7 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
                     {
                         var fileInfo = new FileInfo(e.FullPath);
                         child.Size = fileInfo.Length;
-                        child.Modified = fileInfo.LastWriteTimeUtc;
+                        child.Modified = fileInfo.LastWriteTime;
                         child.Created = fileInfo.CreationTime;
                         child.IsHidden = fileInfo.Attributes.HasFlag(FileAttributes.Hidden);
                     }
@@ -176,6 +184,9 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
     {
         Dispatcher.UIThread.Post(() =>
         {
+            if (!IsDirectory)
+                return;
+
             var child = _children!.FirstOrDefault(child => child.Path == e.OldFullPath);
             if (child is { })
             {
@@ -188,6 +199,9 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
     private AvaloniaList<ExplorerItemModel> LoadChildren()
     {
         var children = new AvaloniaList<ExplorerItemModel>();
+        if (!IsDirectory)
+            return children;
+
         var options = new EnumerationOptions { IgnoreInaccessible = true };
 
         foreach (var dir in Directory.EnumerateDirectories(Path, "*", options))
@@ -237,43 +251,11 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
     public void Dispose()
     {
         _watcher.Dispose();
-    }
 
-    public static Comparison<ExplorerItemModel?> SortAscending<T>(Func<ExplorerItemModel, T> selector)
-    {
-        return (x, y) =>
+        if (_children is { })
         {
-            if (x is null && y is null)
-                return 0;
-            else if (x is null)
-                return -1;
-            else if (y is null)
-                return 1;
-            if (x.IsDirectory == y.IsDirectory)
-                return Comparer<T>.Default.Compare(selector(x), selector(y));
-            else if (x.IsDirectory)
-                return -1;
-            else
-                return 1;
-        };
-    }
-
-    public static Comparison<ExplorerItemModel?> SortDescending<T>(Func<ExplorerItemModel, T> selector)
-    {
-        return (x, y) =>
-        {
-            if (x is null && y is null)
-                return 0;
-            else if (x is null)
-                return 1;
-            else if (y is null)
-                return -1;
-            if (x.IsDirectory == y.IsDirectory)
-                return Comparer<T>.Default.Compare(selector(y), selector(x));
-            else if (x.IsDirectory)
-                return -1;
-            else
-                return 1;
-        };
+            foreach (var child in _children)
+                child.Dispose();
+        }
     }
 }

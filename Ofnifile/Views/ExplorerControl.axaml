@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Ofnifile.ViewModels"
+             xmlns:m="using:Ofnifile.Models"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="vm:ExplorerVM"
+             x:Class="Ofnifile.Views.ExplorerControl">
+
+  <Grid>
+    <TreeDataGrid Source="{Binding TreeSource}">
+      <TreeDataGrid.Resources>
+
+        <!-- Template for Name column cells -->
+        <DataTemplate x:Key="ItemNameCell" DataType="m:ExplorerItemModel">
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+          </StackPanel>
+        </DataTemplate>
+
+        <!-- Edit template for Name column cells -->
+        <DataTemplate x:Key="ItemNameEditCell" DataType="m:ExplorerItemModel">
+          <StackPanel Orientation="Horizontal">
+            <TextBox Text="{Binding Name}" VerticalAlignment="Center"/>
+          </StackPanel>
+        </DataTemplate>
+
+      </TreeDataGrid.Resources>
+
+      <TreeDataGrid.Styles>
+        <Style Selector="TreeDataGrid TreeDataGridRow:nth-child(2n)">
+          <Setter Property="Background"  Value="#20808080"/>
+        </Style>
+      </TreeDataGrid.Styles>
+
+    </TreeDataGrid>
+    
+  </Grid>
+
+</UserControl>
