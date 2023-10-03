@@ -1,6 +1,5 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
-using Avalonia.Controls.Selection;
 using Ofnifile.Interfaces;
 using Ofnifile.Misc;
 using Ofnifile.Models;
@@ -11,17 +10,12 @@ namespace Ofnifile.ViewModels;
 
 public class ExplorerVM : ReactiveObject, IDisposable
 {
-    private string _selectedDrive;
-    private string? _selectedPath;
+    private readonly IDisposable _selectedPathSub;
+
+    private string _selectedPath;
     private IExplorerItem? _root;
 
-    public string SelectedDrive
-    {
-        get => _selectedDrive;
-        set => this.RaiseAndSetIfChanged(ref _selectedDrive, value);
-    }
-
-    public string? SelectedPath
+    public string SelectedPath
     {
         get => _selectedPath;
         set => this.RaiseAndSetIfChanged(ref _selectedPath, value);
@@ -29,9 +23,9 @@ public class ExplorerVM : ReactiveObject, IDisposable
 
     public HierarchicalTreeDataGridSource<IExplorerItem> TreeSource { get; }
 
-    public ExplorerVM(string selectedDrive)
+    public ExplorerVM(string selectedPath)
     {
-        _selectedDrive = selectedDrive;
+        _selectedPath = selectedPath;
 
         TreeSource = new HierarchicalTreeDataGridSource<IExplorerItem>(Array.Empty<IExplorerItem>())
         {
@@ -51,7 +45,7 @@ public class ExplorerVM : ReactiveObject, IDisposable
                             TextSearchValueSelector = x => x.Name
                         }),
                     childSelector: x => x.Children,
-                    hasChildrenSelector: x => x.HasChildren,
+                    hasChildrenSelector: x => x.HasChildren && x.Path == _root!.Path,
                     isExpandedSelector: x => x.IsExpanded),
                 new TextColumn<IExplorerItem, long>(
                     header: "Size",
@@ -81,23 +75,19 @@ public class ExplorerVM : ReactiveObject, IDisposable
         };
 
         TreeSource.RowSelection!.SingleSelect = false;
-        TreeSource.RowSelection.SelectionChanged += TreeSelectionChanged;
 
-        var driveSub = this.WhenAnyValue(x => x.SelectedDrive).Subscribe(x =>
+        _selectedPathSub = this.WhenAnyValue(x => x.SelectedPath).Subscribe(x =>
         {
             _root?.Dispose();
-            _root = new ExplorerItemModel(_selectedDrive, isDirectory: true, isRoot: true);
+            _root = new ExplorerItemModel(SelectedPath, isDirectory: true, isRoot: true);
             TreeSource.Items = new[] { _root };
         });
     }
 
-    private void TreeSelectionChanged(object? sender, TreeSelectionModelSelectionChangedEventArgs<IExplorerItem> e)
-    {
-        SelectedPath = TreeSource.RowSelection?.SelectedItem?.Path;
-    }
-
     public void Dispose()
     {
-        TreeSource.RowSelection!.SelectionChanged -= TreeSelectionChanged;
+        _selectedPathSub.Dispose();
+        _root?.Dispose();
+        TreeSource.Dispose();
     }
 }

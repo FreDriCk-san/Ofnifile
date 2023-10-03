@@ -21,9 +21,19 @@ namespace Ofnifile
                 {
                     DataContext = new MainWindowVM(),
                 };
+                desktop.Exit += Desktop_Exit;
             }
 
             base.OnFrameworkInitializationCompleted();
+        }
+
+        private void Desktop_Exit(object? sender, ControlledApplicationLifetimeExitEventArgs e)
+        {
+            var desktop = (IClassicDesktopStyleApplicationLifetime)ApplicationLifetime!;
+            desktop.Exit -= Desktop_Exit;
+            
+            var mainWindowVm = (MainWindowVM)desktop.MainWindow!.DataContext!;
+            mainWindowVm.Dispose();
         }
     }
 }

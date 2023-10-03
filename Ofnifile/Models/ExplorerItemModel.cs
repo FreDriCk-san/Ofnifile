@@ -109,7 +109,7 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
 
             _watcher = new FileSystemWatcher
             {
-                Path = System.IO.Path.GetDirectoryName(path),
+                Path = System.IO.Path.GetDirectoryName(path)!,
                 Filter = System.IO.Path.GetFileName(path),
                 NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.Size | NotifyFilters.LastWrite,
                 EnableRaisingEvents = true,
