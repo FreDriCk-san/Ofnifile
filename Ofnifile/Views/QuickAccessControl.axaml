@@ -14,7 +14,14 @@
         <!-- Template for Name column cells -->
         <DataTemplate x:Key="ItemNameCell" DataType="m:ExplorerItemModel">
           <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding Name}" VerticalAlignment="Center">
+              <Interaction.Behaviors>
+                <EventTriggerBehavior EventName="DoubleTapped">
+                  <InvokeCommandAction Command="{Binding $parent[TreeDataGrid].DataContext.ChangeSelectedPathCommand}" 
+                                       CommandParameter="{Binding $self.DataContext}"/>
+                </EventTriggerBehavior>
+              </Interaction.Behaviors>
+            </TextBlock>
           </StackPanel>
         </DataTemplate>
 

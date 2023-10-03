@@ -6,6 +6,7 @@ using Ofnifile.Models;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.Reactive;
 
 namespace Ofnifile.ViewModels;
 
@@ -16,7 +17,7 @@ public class QuickAccessVM : ReactiveObject, IDisposable
     private bool _disposed;
 
     public HierarchicalTreeDataGridSource<IExplorerItem> TreeSource { get; }
-
+    public ReactiveCommand<IExplorerItem, Unit> ChangeSelectedPathCommand { get; }
 
     public QuickAccessVM(IList<string> drives)
     {
@@ -52,6 +53,13 @@ public class QuickAccessVM : ReactiveObject, IDisposable
             _localDrives.Add(newDrive);
         }
         TreeSource.Items = _localDrives;
+
+        ChangeSelectedPathCommand = ReactiveCommand.Create<IExplorerItem>(ChangeSelectedPath);
+    }
+
+    private void ChangeSelectedPath(IExplorerItem explorerItem)
+    {
+        // TODO: Change selected path
     }
 
     public void Dispose()
@@ -64,5 +72,6 @@ public class QuickAccessVM : ReactiveObject, IDisposable
             drive.Dispose();
 
         TreeSource.Dispose();
+        ChangeSelectedPathCommand.Dispose();
     }
 }
