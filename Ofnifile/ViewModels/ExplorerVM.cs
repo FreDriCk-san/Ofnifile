@@ -14,6 +14,7 @@ public class ExplorerVM : ReactiveObject, IDisposable
 
     private string _selectedPath;
     private IExplorerItem? _root;
+    private bool _disposed;
 
     public string SelectedPath
     {
@@ -47,6 +48,7 @@ public class ExplorerVM : ReactiveObject, IDisposable
                     childSelector: x => x.Children,
                     hasChildrenSelector: x => x.HasChildren && x.Path == _root!.Path,
                     isExpandedSelector: x => x.IsExpanded),
+
                 new TextColumn<IExplorerItem, long>(
                     header: "Size",
                     getter: x => x.Size,
@@ -55,14 +57,16 @@ public class ExplorerVM : ReactiveObject, IDisposable
                         CompareAscending = Comparisons.SortAscending(x => x.Size),
                         CompareDescending = Comparisons.SortDescending(x => x.Size),
                     }),
+
                 new TextColumn<IExplorerItem, DateTimeOffset>(
                     header: "Created",
-                    getter: x => x.Created,
+                    getter: x => x.Created.ToLocalTime(),
                     options: new TextColumnOptions<IExplorerItem>()
                     {
                         CompareAscending = Comparisons.SortAscending(x => x.Created),
                         CompareDescending = Comparisons.SortDescending(x => x.Created),
                     }),
+
                 new TextColumn<IExplorerItem, DateTimeOffset>(
                     header: "Modified",
                     getter: x => x.Modified,
@@ -86,6 +90,10 @@ public class ExplorerVM : ReactiveObject, IDisposable
 
     public void Dispose()
     {
+        if (_disposed)
+            return; 
+        _disposed = true;
+
         _selectedPathSub.Dispose();
         _root?.Dispose();
         TreeSource.Dispose();

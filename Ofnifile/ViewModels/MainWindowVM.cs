@@ -11,6 +11,7 @@ namespace Ofnifile.ViewModels;
 public class MainWindowVM : ReactiveObject, IDisposable
 {
     private string _selectedPath;
+    private bool _disposed;
 
     public QuickAccessVM QuickAccessVM { get; init; }
     public TabFeedVM TabFeedVM { get; init; }
@@ -26,13 +27,18 @@ public class MainWindowVM : ReactiveObject, IDisposable
             ? "C:\\" 
             : Drives.FirstOrDefault() ?? "/";
 
-        QuickAccessVM = new QuickAccessVM();
+        QuickAccessVM = new QuickAccessVM(Drives);
         TabFeedVM = new TabFeedVM();
         ExplorerVM = new ExplorerVM(_selectedPath);
     }
 
     public void Dispose()
     {
+        if (_disposed) 
+            return;
+        _disposed = true;
+
         ExplorerVM.Dispose();
+        QuickAccessVM.Dispose();
     }
 }

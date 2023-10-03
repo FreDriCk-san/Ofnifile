@@ -1,6 +1,5 @@
 ﻿using Avalonia.Collections;
 using Avalonia.Threading;
-using Ofnifile.Extensions;
 using Ofnifile.Interfaces;
 using ReactiveUI;
 using System;
@@ -23,6 +22,7 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
     private bool _isExpanded;
     private bool _isHidden;
     private AvaloniaList<ExplorerItemModel>? _children;
+    private bool _disposed;
 
     public string Path
     {
@@ -250,6 +250,10 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
 
     public void Dispose()
     {
+        if (_disposed)
+            return;
+        _disposed = true;
+
         _watcher.Dispose();
 
         if (_children is { })
