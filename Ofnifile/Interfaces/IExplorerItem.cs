@@ -17,6 +17,11 @@ public interface IExplorerItem : IDisposable, IEditableObject
     string Name { get; }
 
     /// <summary>
+    /// Item new name created by control
+    /// </summary>
+    string? NewName { get; }
+
+    /// <summary>
     /// Item size
     /// </summary>
     long Size { get; }
@@ -56,6 +61,11 @@ public interface IExplorerItem : IDisposable, IEditableObject
     /// Inner child items
     /// </summary>
     IReadOnlyList<IExplorerItem>? Children { get; }
+
+    /// <summary>
+    /// Item can be renamed
+    /// </summary>
+    bool CanRename { get; }
 
     bool Cut();
     bool Copy();

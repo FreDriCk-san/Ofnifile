@@ -14,6 +14,9 @@ namespace Ofnifile
 
             if (type != null)
             {
+                if (!type.IsAssignableTo(typeof(Control)))
+                    return null;
+
                 return Activator.CreateInstance(type) as Control;
             }
             else

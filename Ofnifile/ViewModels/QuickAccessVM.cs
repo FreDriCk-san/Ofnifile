@@ -49,7 +49,11 @@ public class QuickAccessVM : ReactiveObject, IDisposable
         _localDrives = new List<IExplorerItem>();
         foreach (var drive in drives)
         {
-            var newDrive = new ExplorerItemModel(drive, isDirectory: true, isRoot: true);
+            var newDrive = new ExplorerItemModel(
+                path: drive, 
+                isDirectory: true, 
+                isRoot: true, 
+                canRename: false);
             _localDrives.Add(newDrive);
         }
         TreeSource.Items = _localDrives;

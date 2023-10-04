@@ -4,6 +4,7 @@ using Ofnifile.Interfaces;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -15,6 +16,7 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
 
     private string _path;
     private string _name;
+    private string? _newName;
     private long _size;
     private DateTimeOffset _modified;
     private DateTimeOffset _created;
@@ -34,6 +36,12 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
     {
         get => _name;
         private set => this.RaiseAndSetIfChanged(ref _name, value);
+    }
+
+    public string? NewName
+    {
+        get => _newName;
+        private set => this.RaiseAndSetIfChanged(ref _newName, value);
     }
 
     public long Size
@@ -76,13 +84,17 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
 
     public IReadOnlyList<IExplorerItem>? Children => _children ??= LoadChildren();
 
-    public ExplorerItemModel(string path, bool isDirectory, bool isRoot = false)
+    public bool CanRename { get; init; }
+
+
+    public ExplorerItemModel(string path, bool isDirectory, bool isRoot = false, bool canRename = true)
     {
         _path = path;
         _name = isRoot ? path : System.IO.Path.GetFileName(path);
         _isExpanded = isRoot;
         IsDirectory = isDirectory;
         HasChildren = isDirectory;
+        CanRename = canRename;
 
         if (isDirectory)
         {
@@ -205,27 +217,80 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
         var options = new EnumerationOptions { IgnoreInaccessible = true };
 
         foreach (var dir in Directory.EnumerateDirectories(Path, "*", options))
-            children.Add(new ExplorerItemModel(dir, true));
+            children.Add(new ExplorerItemModel(dir, true, canRename: CanRename));
 
         foreach (var file in Directory.EnumerateFiles(Path, "*", options))
-            children.Add(new ExplorerItemModel(file, false));
+            children.Add(new ExplorerItemModel(file, false, canRename: CanRename));
 
         return children;
     }
 
     public void BeginEdit()
     {
-        throw new NotImplementedException();
+        if (!CanRename)
+            return;
+
+        _newName = Name;
     }
 
     public void CancelEdit()
     {
-        throw new NotImplementedException();
+        _newName = null;
     }
 
     public void EndEdit()
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(_newName) || _newName == Name)
+            return;
+
+        string parentPath;
+        string newPath;
+        if (IsDirectory)
+        {
+            parentPath = new DirectoryInfo(Path).Parent!.FullName;
+            newPath = System.IO.Path.Combine(parentPath, _newName);
+
+            if (Directory.Exists(newPath))
+            {
+                Debug.Fail($"Path {newPath} already exists!");
+                return;
+            }
+
+            try
+            {
+                Directory.Move(Path, newPath);
+            }
+            catch (Exception exception)
+            {
+                Debug.Fail(exception.Message);
+            }
+        }
+        else
+        {
+            var fileInfo = new FileInfo(Path);
+            parentPath = fileInfo.Directory!.FullName;
+            var extension = fileInfo.Extension;
+            if (!_newName.Contains(extension))
+                _newName = $"{_newName}.{extension}";
+            newPath = System.IO.Path.Combine(parentPath, _newName);
+
+            if (File.Exists(newPath))
+            {
+                Debug.Fail($"Path {newPath} already exists!");
+                return;
+            }
+
+            try
+            {
+                File.Move(Path, newPath);
+            }
+            catch (Exception exception)
+            {
+                Debug.Fail(exception.Message);
+            }
+        }
+
+        _newName = null;
     }
 
     public bool Copy()

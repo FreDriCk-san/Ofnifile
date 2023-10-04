@@ -3,7 +3,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:Ofnifile.ViewModels"
+             xmlns:i="using:Avalonia.Xaml.Interactivity"
              xmlns:m="using:Ofnifile.Models"
+             xmlns:bhv="using:Ofnifile.Behaviours"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="vm:QuickAccessVM"
              x:Class="Ofnifile.Views.QuickAccessControl">
@@ -13,22 +15,15 @@
 
         <!-- Template for Name column cells -->
         <DataTemplate x:Key="ItemNameCell" DataType="m:ExplorerItemModel">
-          <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{Binding Name}" VerticalAlignment="Center">
-              <Interaction.Behaviors>
-                <EventTriggerBehavior EventName="DoubleTapped">
-                  <InvokeCommandAction Command="{Binding $parent[TreeDataGrid].DataContext.ChangeSelectedPathCommand}" 
-                                       CommandParameter="{Binding $self.DataContext}"/>
-                </EventTriggerBehavior>
-              </Interaction.Behaviors>
-            </TextBlock>
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+            <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
           </StackPanel>
         </DataTemplate>
 
         <!-- Edit template for Name column cells -->
         <DataTemplate x:Key="ItemNameEditCell" DataType="m:ExplorerItemModel">
           <StackPanel Orientation="Horizontal">
-            <TextBox Text="{Binding Name}" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding NewName}" VerticalAlignment="Center"/>
           </StackPanel>
         </DataTemplate>
 
@@ -37,6 +32,19 @@
       <TreeDataGrid.Styles>
         <Style Selector="TreeDataGrid TreeDataGridRow:selected">
           <Setter Property="Background" Value="LightBlue"/>
+        </Style>
+        
+        <Style Selector="TreeDataGrid TreeDataGridCell">
+          <Setter Property="(i:Interaction.Behaviors)">
+            <i:BehaviorCollectionTemplate>
+              <i:BehaviorCollection>
+                <bhv:PreviewDoubleTappedBehaviour HandleEvent="True" 
+                                                  Command="{Binding $parent[TreeDataGrid].DataContext.ChangeSelectedPathCommand}"
+                                                  CommandParameter="{Binding $self.DataContext}"/>
+                <bhv:PreviewKeyDownBehaviour HandleEvent="True"/>
+              </i:BehaviorCollection>
+            </i:BehaviorCollectionTemplate>
+          </Setter>
         </Style>
       </TreeDataGrid.Styles>
 
