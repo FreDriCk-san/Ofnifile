@@ -185,6 +185,7 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
                 if (_children[i].Path == e.FullPath)
                 {
                     // RemoveAt is a little faster than Remove
+                    _children[i].Dispose();
                     _children.RemoveAt(i);
                     break;
                 }

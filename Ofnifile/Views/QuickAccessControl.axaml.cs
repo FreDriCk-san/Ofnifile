@@ -1,12 +1,12 @@
-using Avalonia.Controls;
+using Avalonia.ReactiveUI;
+using Ofnifile.ViewModels;
 
-namespace Ofnifile.Views
+namespace Ofnifile.Views;
+
+public partial class QuickAccessControl : ReactiveUserControl<QuickAccessVM>
 {
-    public partial class QuickAccessControl : UserControl
+    public QuickAccessControl()
     {
-        public QuickAccessControl()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

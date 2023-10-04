@@ -54,6 +54,7 @@ public class PreviewDoubleTappedBehaviour : Behavior<InputElement>
     private void DoubleTapped(object? sender, TappedEventArgs e)
     {
         e.Handled = HandleEvent;
+
         if (Command is null)
             return;
 

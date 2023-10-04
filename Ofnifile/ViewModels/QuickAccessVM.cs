@@ -17,8 +17,9 @@ public class QuickAccessVM : ReactiveObject, IDisposable
     private bool _disposed;
 
     public HierarchicalTreeDataGridSource<IExplorerItem> TreeSource { get; }
-    public ReactiveCommand<IExplorerItem, Unit> ChangeSelectedPathCommand { get; }
 
+    public ReactiveCommand<Unit, Unit> ChangeSelectedPathCommand { get; }
+    
     public QuickAccessVM(IList<string> drives)
     {
         TreeSource = new HierarchicalTreeDataGridSource<IExplorerItem>(Array.Empty<IExplorerItem>())
@@ -29,7 +30,6 @@ public class QuickAccessVM : ReactiveObject, IDisposable
                     new TemplateColumn<IExplorerItem>(
                         header: "Name",
                         cellTemplateResourceKey: "ItemNameCell",
-                        cellEditingTemplateResourceKey: "ItemNameEditCell",
                         width: new GridLength(1, GridUnitType.Star),
                         options: new TemplateColumnOptions<IExplorerItem>()
                         {
@@ -58,12 +58,12 @@ public class QuickAccessVM : ReactiveObject, IDisposable
         }
         TreeSource.Items = _localDrives;
 
-        ChangeSelectedPathCommand = ReactiveCommand.Create<IExplorerItem>(ChangeSelectedPath);
+        ChangeSelectedPathCommand = ReactiveCommand.Create(ChangeSelectedPath);
     }
 
-    private void ChangeSelectedPath(IExplorerItem explorerItem)
+    private void ChangeSelectedPath()
     {
-        // TODO: Change selected path
+        // TODO: Change selected path by last selected item on tree
     }
 
     public void Dispose()

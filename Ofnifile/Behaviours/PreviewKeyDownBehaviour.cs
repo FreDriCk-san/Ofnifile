@@ -61,8 +61,12 @@ public class PreviewKeyDownBehaviour : Behavior<InputElement>
 
     private void KeyDown(object? sender, KeyEventArgs e)
     {
+        if (DownKey.GetValueOrDefault(e.Key) != e.Key)
+            return;
+
         e.Handled = HandleEvent;
-        if (Command is null || DownKey.GetValueOrDefault(e.Key) != e.Key)
+
+        if (Command is null)
             return;
 
         object? resolvedParameter = IsSet(CommandParameterProperty)
