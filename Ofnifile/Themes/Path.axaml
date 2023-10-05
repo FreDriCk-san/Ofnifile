@@ -1,0 +1,62 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:res="using:Ofnifile.Themes"
+        xmlns:sys="using:System"
+        >
+
+  <Styles.Resources>
+    <ControlTheme x:Key="PathBase" TargetType="Path">
+      <Setter Property="Stretch" Value="Uniform"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </ControlTheme>
+
+    <ControlTheme x:Key="FolderPath" TargetType="Path" BasedOn="{StaticResource PathBase}">
+      <Setter Property="Data" Value="M20,18H4V8H20M20,6H12L10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6Z"/>
+    </ControlTheme>
+
+    <ControlTheme x:Key="OpenFolderPath" TargetType="Path" BasedOn="{StaticResource PathBase}">
+      <Setter Property="Data" Value="M6.1,10L4,18V8H21A2,2 0 0,0 19,6H12L10,4H4A2,2 0 0,0 2,6V18A2,2 0 0,0 4,20H19C19.9,20 20.7,19.4 20.9,18.5L23.2,10H6.1M19,18H6L7.6,12H20.6L19,18Z"/>
+    </ControlTheme>
+
+    <ControlTheme x:Key="FilePath" TargetType="Path" BasedOn="{StaticResource PathBase}">
+      <Setter Property="Data" Value="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+    </ControlTheme>
+  </Styles.Resources>
+  
+  <Design.PreviewWith>
+    <StackPanel MinWidth="200" MaxWidth="600">
+      <StackPanel.Resources>
+        <ControlTheme x:Key="ControlPreviewer" TargetType="res:ControlPreviewer">
+          <Setter Property="Template">
+            <ControlTemplate>
+              <Border BorderThickness="1" BorderBrush="LightGray" Padding="4" Margin="4">
+                <DockPanel>
+                  <Path Theme="{TemplateBinding Key}" Fill="LightGray" DockPanel.Dock="Right" Width="25" Height="25"/>
+                  <TextBlock Text="{TemplateBinding Name}" Margin="0,0,4,0"/>
+                </DockPanel>
+              </Border>
+            </ControlTemplate>
+          </Setter>
+        </ControlTheme>
+      </StackPanel.Resources>
+      
+      <ItemsControl>
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <WrapPanel />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <res:ControlPreviewer x:Name="{Binding .}" Theme="{StaticResource ControlPreviewer}" />
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>        
+        
+        <sys:String>FolderPath</sys:String>
+        <sys:String>OpenFolderPath</sys:String>
+        <sys:String>FilePath</sys:String>
+      </ItemsControl>
+    </StackPanel>
+  </Design.PreviewWith>
+</Styles>

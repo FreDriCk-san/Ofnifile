@@ -5,9 +5,13 @@
              xmlns:vm="using:Ofnifile.ViewModels"
              xmlns:m="using:Ofnifile.Models"
              xmlns:bhv="using:Ofnifile.Behaviours"
+             xmlns:conv="using:Ofnifile.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="vm:ExplorerVM"
              x:Class="Ofnifile.Views.ExplorerControl">
+  <UserControl.Resources>
+    <conv:ItemExplorerToPathConverter x:Key="itemToPathConverter"/>
+  </UserControl.Resources>
 
   <Grid>
     <TreeDataGrid Source="{Binding TreeSource}">
@@ -17,17 +21,50 @@
       </Interaction.Behaviors>
 
       <TreeDataGrid.Resources>
-        <!-- Template for Name column cells -->
-        <DataTemplate x:Key="ItemNameCell" DataType="m:ExplorerItemModel">
-          <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+        <!-- Name template -->
+        <DataTemplate x:Key="ItemNameCell"
+                      DataType="m:ExplorerItemModel">
+          <StackPanel Orientation="Horizontal"
+                      HorizontalAlignment="Stretch">
+            <Path Width="20"
+                  Height="20"
+                  VerticalAlignment="Center"
+                  HorizontalAlignment="Center"
+                  Fill="Gray">
+              <Path.Theme>
+                <MultiBinding Converter="{StaticResource itemToPathConverter}">
+                  <Binding Path="IsDirectory"/>
+                  <Binding Path="IsExpanded"/>
+                </MultiBinding>
+              </Path.Theme>
+            </Path>
+            <TextBlock Text="{Binding Name}"
+                       Margin="10,0,0,0"
+                       VerticalAlignment="Center"/>
           </StackPanel>
         </DataTemplate>
 
-        <!-- Edit template for Name column cells -->
-        <DataTemplate x:Key="ItemNameEditCell" DataType="m:ExplorerItemModel">
-          <StackPanel Orientation="Horizontal">
-            <TextBox Text="{Binding Name}" VerticalAlignment="Center"/>
+        <!-- Edit template -->
+        <DataTemplate x:Key="ItemNameEditCell"
+                      DataType="m:ExplorerItemModel">
+          <StackPanel Orientation="Horizontal"
+                      HorizontalAlignment="Stretch">
+            <Path Width="20"
+                  Height="20"
+                  VerticalAlignment="Center"
+                  HorizontalAlignment="Center"
+                  Fill="Gray">
+              <Path.Theme>
+                <MultiBinding Converter="{StaticResource itemToPathConverter}">
+                  <Binding Path="IsDirectory"/>
+                  <Binding Path="IsExpanded"/>
+                </MultiBinding>
+              </Path.Theme>
+            </Path>
+            <TextBox Text="{Binding Name}"
+                     FontSize="14"
+                     Margin="10,0,0,0"
+                     VerticalAlignment="Center"/>
           </StackPanel>
         </DataTemplate>
       </TreeDataGrid.Resources>

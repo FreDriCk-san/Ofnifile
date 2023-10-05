@@ -6,9 +6,14 @@
              xmlns:i="using:Avalonia.Xaml.Interactivity"
              xmlns:m="using:Ofnifile.Models"
              xmlns:bhv="using:Ofnifile.Behaviours"
+             xmlns:conv="using:Ofnifile.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="vm:QuickAccessVM"
              x:Class="Ofnifile.Views.QuickAccessControl">
+  <UserControl.Resources>
+    <conv:ItemExplorerToPathConverter x:Key="itemToPathConverter"/>
+  </UserControl.Resources>
+  
   <Grid>
     <TreeDataGrid Source="{Binding TreeSource}">
       <Interaction.Behaviors>
@@ -17,10 +22,26 @@
       </Interaction.Behaviors>
       
       <TreeDataGrid.Resources>
-        <!-- Template for Name column cells -->
-        <DataTemplate x:Key="ItemNameCell" DataType="m:ExplorerItemModel">
-          <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-            <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+        <!-- Name template -->
+        <DataTemplate x:Key="ItemNameCell" 
+                      DataType="m:ExplorerItemModel">
+          <StackPanel Orientation="Horizontal" 
+                      HorizontalAlignment="Stretch">
+            <Path Width="20" 
+                  Height="20"
+                  VerticalAlignment="Center"
+                  HorizontalAlignment="Center"
+                  Fill="Gray">
+              <Path.Theme>
+                <MultiBinding Converter="{StaticResource itemToPathConverter}">
+                  <Binding Path="IsDirectory"/>
+                  <Binding Path="IsExpanded"/>
+                </MultiBinding>
+              </Path.Theme>
+            </Path>
+            <TextBlock Text="{Binding Name}"
+                       Margin="10,0,0,0"
+                       VerticalAlignment="Center"/>
           </StackPanel>
         </DataTemplate>
       </TreeDataGrid.Resources>
