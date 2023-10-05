@@ -14,8 +14,6 @@
       <Interaction.Behaviors>
         <bhv:PreviewDoubleTappedBehaviour HandleEvent="True"
                                           Command="{Binding ChangeSelectedPathCommand}"/>
-        <bhv:PreviewKeyDownBehaviour DownKey="F2"
-                                     HandleEvent="True"/>
       </Interaction.Behaviors>
       
       <TreeDataGrid.Resources>

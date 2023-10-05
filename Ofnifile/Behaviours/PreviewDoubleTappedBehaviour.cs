@@ -38,14 +38,12 @@ public class PreviewDoubleTappedBehaviour : Behavior<InputElement>
 
     protected override void OnAttached()
     {
-        //AssociatedObject!.AddHandler(InputElement.DoubleTappedEvent, DoubleTapped, Avalonia.Interactivity.RoutingStrategies.Tunnel);
         AssociatedObject!.DoubleTapped += DoubleTapped;
         base.OnAttached();
     }
 
     protected override void OnDetaching()
     {
-        //AssociatedObject!.RemoveHandler(InputElement.DoubleTappedEvent, DoubleTapped);
         AssociatedObject!.DoubleTapped -= DoubleTapped;
         base.OnDetaching();
     }

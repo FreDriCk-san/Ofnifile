@@ -76,6 +76,5 @@ public class QuickAccessVM : ReactiveObject, IDisposable
             drive.Dispose();
 
         TreeSource.Dispose();
-        ChangeSelectedPathCommand.Dispose();
     }
 }

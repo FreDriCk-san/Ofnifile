@@ -5,6 +5,7 @@ using Ofnifile.Misc;
 using Ofnifile.Models;
 using ReactiveUI;
 using System;
+using System.Reactive;
 
 namespace Ofnifile.ViewModels;
 
@@ -24,6 +25,8 @@ public class ExplorerVM : ReactiveObject, IDisposable
 
     public HierarchicalTreeDataGridSource<IExplorerItem> TreeSource { get; }
 
+    public ReactiveCommand<Unit, Unit> ChangeSelectedPathCommand { get; }
+
     public ExplorerVM(string selectedPath)
     {
         _selectedPath = selectedPath;
@@ -40,6 +43,7 @@ public class ExplorerVM : ReactiveObject, IDisposable
                         width: new GridLength(1, GridUnitType.Star),
                         options: new TemplateColumnOptions<IExplorerItem>()
                         {
+                            BeginEditGestures = BeginEditGestures.F2,
                             CompareAscending = Comparisons.SortAscending(x => x.Name),
                             CompareDescending = Comparisons.SortDescending(x => x.Name),
                             IsTextSearchEnabled = true,
@@ -86,6 +90,13 @@ public class ExplorerVM : ReactiveObject, IDisposable
             _root = new ExplorerItemModel(SelectedPath, isDirectory: true, isRoot: true);
             TreeSource.Items = new[] { _root };
         });
+
+        ChangeSelectedPathCommand = ReactiveCommand.Create(ChangeSelectedPath);
+    }
+
+    private void ChangeSelectedPath()
+    {
+        // TODO: Change selected path by last selected item on tree
     }
 
     public void Dispose()

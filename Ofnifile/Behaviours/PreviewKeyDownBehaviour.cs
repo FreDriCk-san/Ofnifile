@@ -47,14 +47,12 @@ public class PreviewKeyDownBehaviour : Behavior<InputElement>
 
     protected override void OnAttached()
     {
-        //AssociatedObject!.AddHandler(InputElement.KeyDownEvent, KeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
         AssociatedObject!.KeyDown += KeyDown;
         base.OnAttached();
     }
 
     protected override void OnDetaching()
     {
-        //AssociatedObject!.RemoveHandler(InputElement.KeyDownEvent, KeyDown);
         AssociatedObject!.KeyDown -= KeyDown;
         base.OnDetaching();
     }
