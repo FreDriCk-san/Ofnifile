@@ -287,27 +287,49 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
 
     private void Cut()
     {
-
+        throw new NotImplementedException();
     }
 
     private void Copy()
     {
-
+        throw new NotImplementedException();
     }
 
     private void Paste()
     {
-
+        throw new NotImplementedException();
     }
 
     private void Delete()
     {
-
+        // Removal must listen item's parent
+        if (IsDirectory && Directory.Exists(Path))
+        {
+            try
+            {
+                Directory.Delete(Path, true);
+            }
+            catch (Exception exception)
+            {
+                Debug.Fail(exception.Message);
+            }
+        }
+        else if (!IsDirectory && File.Exists(Path))
+        {
+            try
+            {
+                File.Delete(Path);
+            }
+            catch (Exception exception)
+            {
+                Debug.Fail(exception.Message);
+            }
+        }
     }
 
     private void Rename()
     {
-
+        throw new NotImplementedException();
     }
 
     public bool Rename(string? newName)
