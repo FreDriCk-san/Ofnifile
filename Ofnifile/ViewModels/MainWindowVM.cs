@@ -41,6 +41,8 @@ public class MainWindowVM : ReactiveObject, IDisposable
     private void SelectedPathHasChanged(string? selectedPath)
     {
         // TODO: Sync QuickVm selection with ExplorerVm?
+        if (QuickAccessVM.SelectedPath != selectedPath)
+            QuickAccessVM.SelectedPath = selectedPath;
 
         if (ExplorerVM.SelectedPath != selectedPath)
             ExplorerVM.SelectedPath = selectedPath;
