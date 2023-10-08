@@ -29,6 +29,11 @@ public interface IExplorerItem : IDisposable, IEditableObject
     long Size { get; }
 
     /// <summary>
+    /// Preety view of size property
+    /// </summary>
+    string? StringSize { get; }
+
+    /// <summary>
     /// Last modified date
     /// </summary>
     DateTimeOffset Modified { get; }

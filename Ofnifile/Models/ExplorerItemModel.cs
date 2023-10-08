@@ -1,5 +1,6 @@
 ﻿using Avalonia.Collections;
 using Avalonia.Threading;
+using Ofnifile.Extensions;
 using Ofnifile.Interfaces;
 using ReactiveUI;
 using System;
@@ -48,8 +49,14 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
     public long Size
     {
         get => _size;
-        private set => this.RaiseAndSetIfChanged(ref _size, value);
+        private set
+        {
+            this.RaiseAndSetIfChanged(ref _size, value);
+            this.RaisePropertyChanged(nameof(StringSize));
+        }
     }
+
+    public string? StringSize => Size.FileSize();
 
     public DateTimeOffset Modified
     {
@@ -156,25 +163,28 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
         {
             Dispatcher.UIThread.Post(() =>
             {
-                var child = _children!.FirstOrDefault(child => child.Path == e.FullPath);
-                if (child is { })
+                if (_children is null)
+                    return;
+
+                var child = _children.FirstOrDefault(child => child.Path == e.FullPath);
+                if (child is not { })
+                    return;
+
+                if (child.IsDirectory)
                 {
-                    if (child.IsDirectory)
-                    {
-                        var directoryInfo = new DirectoryInfo(e.FullPath);
-                        //child.Size = directoryInfo.Size();
-                        child.Modified = directoryInfo.LastWriteTime;
-                        child.Created = directoryInfo.CreationTime;
-                        child.IsHidden = directoryInfo.Attributes.HasFlag(FileAttributes.Hidden);
-                    }
-                    else
-                    {
-                        var fileInfo = new FileInfo(e.FullPath);
-                        child.Size = fileInfo.Length;
-                        child.Modified = fileInfo.LastWriteTime;
-                        child.Created = fileInfo.CreationTime;
-                        child.IsHidden = fileInfo.Attributes.HasFlag(FileAttributes.Hidden);
-                    }
+                    var directoryInfo = new DirectoryInfo(e.FullPath);
+                    //child.Size = directoryInfo.Size();
+                    child.Modified = directoryInfo.LastWriteTime;
+                    child.Created = directoryInfo.CreationTime;
+                    child.IsHidden = directoryInfo.Attributes.HasFlag(FileAttributes.Hidden);
+                }
+                else
+                {
+                    var fileInfo = new FileInfo(e.FullPath);
+                    child.Size = fileInfo.Length;
+                    child.Modified = fileInfo.LastWriteTime;
+                    child.Created = fileInfo.CreationTime;
+                    child.IsHidden = fileInfo.Attributes.HasFlag(FileAttributes.Hidden);
                 }
             });
         }
@@ -184,9 +194,21 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
     {
         Dispatcher.UIThread.Post(() =>
         {
-            var isDirectory = File.GetAttributes(e.FullPath).HasFlag(FileAttributes.Directory);
-            var child = new ExplorerItemModel(e.FullPath, isDirectory);
-            _children!.Add(child);
+            if (_children is null)
+                return;
+
+            ExplorerItemModel? child = null;
+            if (File.Exists(e.FullPath))
+            {
+                child = new ExplorerItemModel(e.FullPath, isDirectory: false);
+            }
+            else if (Directory.Exists(e.FullPath))
+            {
+                child = new ExplorerItemModel(e.FullPath, isDirectory: true);
+            }
+
+            if (child is { })
+                _children.Add(child);
         });
     }
 
@@ -194,7 +216,10 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
     {
         Dispatcher.UIThread.Post(() =>
         {
-            for (int i = 0; i < _children!.Count; ++i)
+            if (_children is null)
+                return;
+
+            for (int i = 0; i < _children.Count; ++i)
             {
                 if (_children[i].Path == e.FullPath)
                 {
@@ -211,10 +236,10 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
     {
         Dispatcher.UIThread.Post(() =>
         {
-            if (!IsDirectory)
+            if (!IsDirectory || _children is null)
                 return;
 
-            var child = _children!.FirstOrDefault(child => child.Path == e.OldFullPath);
+            var child = _children.FirstOrDefault(child => child.Path == e.OldFullPath);
             if (child is { })
             {
                 child.Path = e.FullPath;

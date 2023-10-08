@@ -41,27 +41,27 @@ public class ExplorerVM : BaseExplorerVM
                     hasChildrenSelector: x => x.HasChildren && x.Path == _root!.Path,
                     isExpandedSelector: x => x.IsExpanded),
 
-                new TextColumn<IExplorerItem, long>(
+                new TextColumn<IExplorerItem, string>(
                     header: "Size",
-                    getter: x => x.Size,
+                    getter: x => x.StringSize,
                     options: new TextColumnOptions<IExplorerItem>()
                     {
                         CompareAscending = Comparisons.SortAscending(x => x.Size),
                         CompareDescending = Comparisons.SortDescending(x => x.Size),
                     }),
 
-                new TextColumn<IExplorerItem, DateTimeOffset>(
+                new TextColumn<IExplorerItem, string>(
                     header: "Created",
-                    getter: x => x.Created.ToLocalTime(),
+                    getter: x => x.Created.ToLocalTime().ToString("dd.MM.yyyy HH:mm.ss"),
                     options: new TextColumnOptions<IExplorerItem>()
                     {
                         CompareAscending = Comparisons.SortAscending(x => x.Created),
                         CompareDescending = Comparisons.SortDescending(x => x.Created),
                     }),
 
-                new TextColumn<IExplorerItem, DateTimeOffset>(
+                new TextColumn<IExplorerItem, string>(
                     header: "Modified",
-                    getter: x => x.Modified,
+                    getter: x => x.Modified.ToLocalTime().ToString("dd.MM.yyyy HH:mm.ss"),
                     options: new TextColumnOptions<IExplorerItem>()
                     {
                         CompareAscending = Comparisons.SortAscending(x => x.Modified),
