@@ -1,6 +1,8 @@
-﻿using System;
+﻿using ReactiveUI;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reactive;
 
 namespace Ofnifile.Interfaces;
 
@@ -62,13 +64,12 @@ public interface IExplorerItem : IDisposable, IEditableObject
     /// </summary>
     IReadOnlyList<IExplorerItem>? Children { get; }
 
-    /// <summary>
-    /// Item can be renamed
-    /// </summary>
-    bool CanRename { get; }
+    ReactiveCommand<Unit, Unit> CutCommand { get; }
+    ReactiveCommand<Unit, Unit> CopyCommand { get; }
+    ReactiveCommand<Unit, Unit> PasteCommand { get; }
+    ReactiveCommand<Unit, Unit> DeleteCommand { get; }
+    ReactiveCommand<Unit, Unit> RenameCommand { get; }
 
-    bool Cut();
-    bool Copy();
-    bool Delete();
-    bool Rename();
+
+    bool Rename(string? newName);
 }

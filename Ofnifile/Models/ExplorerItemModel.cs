@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reactive;
 
 namespace Ofnifile.Models;
 
@@ -84,17 +85,24 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
 
     public IReadOnlyList<IExplorerItem>? Children => _children ??= LoadChildren();
 
-    public bool CanRename { get; init; }
+    public ReactiveCommand<Unit, Unit> CutCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> CopyCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> PasteCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> RenameCommand { get; }
 
 
-    public ExplorerItemModel(string path, bool isDirectory, bool isRoot = false, bool canRename = true)
+    public ExplorerItemModel(string path, bool isDirectory, bool isRoot = false)
     {
         _path = path;
         _name = isRoot ? path : System.IO.Path.GetFileName(path);
         _isExpanded = isRoot;
         IsDirectory = isDirectory;
         HasChildren = isDirectory;
-        CanRename = canRename;
 
         if (isDirectory)
         {
@@ -132,6 +140,12 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
         _watcher.Created += ItemCreated;
         _watcher.Deleted += ItemDeleted;
         _watcher.Renamed += ItemRenamed;
+
+        CutCommand = ReactiveCommand.Create(Cut);
+        CopyCommand = ReactiveCommand.Create(Copy);
+        PasteCommand = ReactiveCommand.Create(Paste);
+        DeleteCommand = ReactiveCommand.Create(Delete);
+        RenameCommand = ReactiveCommand.Create(Rename);
     }
 
     private void ItemChanged(object sender, FileSystemEventArgs e)
@@ -215,22 +229,23 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
         if (!IsDirectory)
             return children;
 
-        var options = new EnumerationOptions { IgnoreInaccessible = true };
+        var options = new EnumerationOptions 
+        { 
+            IgnoreInaccessible = true,
+            AttributesToSkip = FileAttributes.Hidden | FileAttributes.System | FileAttributes.Temporary
+        };
 
         foreach (var dir in Directory.EnumerateDirectories(Path, "*", options))
-            children.Add(new ExplorerItemModel(dir, true, canRename: CanRename));
+            children.Add(new ExplorerItemModel(dir, true));
 
         foreach (var file in Directory.EnumerateFiles(Path, "*", options))
-            children.Add(new ExplorerItemModel(file, false, canRename: CanRename));
+            children.Add(new ExplorerItemModel(file, false));
 
         return children;
     }
 
     public void BeginEdit()
     {
-        if (!CanRename)
-            return;
-
         _newName = Name;
     }
 
@@ -241,20 +256,51 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
 
     public void EndEdit()
     {
-        if (string.IsNullOrEmpty(_newName) || _newName == Name)
-            return;
+        Rename(_newName);
+        _newName = null;
+    }
+
+    private void Cut()
+    {
+
+    }
+
+    private void Copy()
+    {
+
+    }
+
+    private void Paste()
+    {
+
+    }
+
+    private void Delete()
+    {
+
+    }
+
+    private void Rename()
+    {
+
+    }
+
+    public bool Rename(string? newName)
+    {
+        if (string.IsNullOrEmpty(newName) || newName == Name)
+            return false;
 
         string parentPath;
         string newPath;
         if (IsDirectory)
         {
             parentPath = new DirectoryInfo(Path).Parent!.FullName;
-            newPath = System.IO.Path.Combine(parentPath, _newName);
+            newPath = System.IO.Path.Combine(parentPath, newName);
 
             if (Directory.Exists(newPath))
             {
                 Debug.Fail($"Path {newPath} already exists!");
-                return;
+                return false;
             }
 
             try
@@ -264,6 +310,7 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
             catch (Exception exception)
             {
                 Debug.Fail(exception.Message);
+                return false;
             }
         }
         else
@@ -271,14 +318,14 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
             var fileInfo = new FileInfo(Path);
             parentPath = fileInfo.Directory!.FullName;
             var extension = fileInfo.Extension;
-            if (!_newName.Contains(extension))
-                _newName = $"{_newName}.{extension}";
-            newPath = System.IO.Path.Combine(parentPath, _newName);
+            if (!newName.Contains(extension))
+                newName = $"{newName}.{extension}";
+            newPath = System.IO.Path.Combine(parentPath, newName);
 
             if (File.Exists(newPath))
             {
                 Debug.Fail($"Path {newPath} already exists!");
-                return;
+                return false;
             }
 
             try
@@ -288,30 +335,11 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
             catch (Exception exception)
             {
                 Debug.Fail(exception.Message);
+                return false;
             }
         }
 
-        _newName = null;
-    }
-
-    public bool Copy()
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool Cut()
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool Delete()
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool Rename()
-    {
-        throw new NotImplementedException();
+        return true;
     }
 
     public void Dispose()
@@ -327,5 +355,11 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
             foreach (var child in _children)
                 child.Dispose();
         }
+
+        CutCommand.Dispose();
+        CopyCommand.Dispose();
+        PasteCommand.Dispose();
+        DeleteCommand.Dispose();
+        RenameCommand.Dispose();
     }
 }

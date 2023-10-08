@@ -3,24 +3,20 @@ using Avalonia.Controls.Models.TreeDataGrid;
 using Ofnifile.Interfaces;
 using Ofnifile.Misc;
 using Ofnifile.Models;
-using ReactiveUI;
 using System;
 using System.Collections.Generic;
-using System.Reactive;
 
 namespace Ofnifile.ViewModels;
 
-public class QuickAccessVM : ReactiveObject, IDisposable
+public class QuickAccessVM : BaseExplorerVM
 {
     private readonly List<IExplorerItem> _localDrives;
     
     private bool _disposed;
 
-    public HierarchicalTreeDataGridSource<IExplorerItem> TreeSource { get; }
-
-    public ReactiveCommand<Unit, Unit> ChangeSelectedPathCommand { get; }
     
-    public QuickAccessVM(IList<string> drives)
+    public QuickAccessVM(IList<string> drives, string? selectedPath) 
+        : base(selectedPath)
     {
         TreeSource = new HierarchicalTreeDataGridSource<IExplorerItem>(Array.Empty<IExplorerItem>())
         {
@@ -30,7 +26,7 @@ public class QuickAccessVM : ReactiveObject, IDisposable
                     new TemplateColumn<IExplorerItem>(
                         header: "Name",
                         cellTemplateResourceKey: "ItemNameCell",
-                        width: new GridLength(1, GridUnitType.Star),
+                        width: GridLength.Star,
                         options: new TemplateColumnOptions<IExplorerItem>()
                         {
                             CompareAscending = Comparisons.SortAscending(x => x.Name),
@@ -52,29 +48,22 @@ public class QuickAccessVM : ReactiveObject, IDisposable
             var newDrive = new ExplorerItemModel(
                 path: drive, 
                 isDirectory: true, 
-                isRoot: true, 
-                canRename: false);
+                isRoot: true);
             _localDrives.Add(newDrive);
         }
         TreeSource.Items = _localDrives;
-
-        ChangeSelectedPathCommand = ReactiveCommand.Create(ChangeSelectedPath);
     }
 
-    private void ChangeSelectedPath()
-    {
-        // TODO: Change selected path by last selected item on tree
-    }
 
-    public void Dispose()
+    public override void Dispose()
     {
         if (_disposed)
             return;
         _disposed = true;
 
+        base.Dispose();
+
         foreach (var drive in _localDrives)
             drive.Dispose();
-
-        TreeSource.Dispose();
     }
 }

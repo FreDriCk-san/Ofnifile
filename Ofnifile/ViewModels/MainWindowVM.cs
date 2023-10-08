@@ -10,6 +10,9 @@ namespace Ofnifile.ViewModels;
 
 public class MainWindowVM : ReactiveObject, IDisposable
 {
+    private readonly IDisposable _quickVmPathSub;
+    private readonly IDisposable _explorerPathSub;
+
     private string _selectedPath;
     private bool _disposed;
 
@@ -27,9 +30,20 @@ public class MainWindowVM : ReactiveObject, IDisposable
             ? "C:\\" 
             : Drives.FirstOrDefault() ?? "/";
 
-        QuickAccessVM = new QuickAccessVM(Drives);
         TabFeedVM = new TabFeedVM();
+        QuickAccessVM = new QuickAccessVM(Drives, _selectedPath);
         ExplorerVM = new ExplorerVM(_selectedPath);
+
+        _quickVmPathSub = QuickAccessVM.WhenAnyValue(x => x.SelectedPath).Subscribe(SelectedPathHasChanged);
+        _explorerPathSub = ExplorerVM.WhenAnyValue(x => x.SelectedPath).Subscribe(SelectedPathHasChanged);
+    }
+
+    private void SelectedPathHasChanged(string? selectedPath)
+    {
+        // TODO: Sync QuickVm selection with ExplorerVm?
+
+        if (ExplorerVM.SelectedPath != selectedPath)
+            ExplorerVM.SelectedPath = selectedPath;
     }
 
     public void Dispose()
@@ -37,6 +51,9 @@ public class MainWindowVM : ReactiveObject, IDisposable
         if (_disposed) 
             return;
         _disposed = true;
+
+        _quickVmPathSub.Dispose();
+        _explorerPathSub.Dispose();
 
         ExplorerVM.Dispose();
         QuickAccessVM.Dispose();

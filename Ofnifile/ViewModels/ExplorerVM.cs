@@ -5,32 +5,20 @@ using Ofnifile.Misc;
 using Ofnifile.Models;
 using ReactiveUI;
 using System;
-using System.Reactive;
+using System.IO;
 
 namespace Ofnifile.ViewModels;
 
-public class ExplorerVM : ReactiveObject, IDisposable
+public class ExplorerVM : BaseExplorerVM
 {
     private readonly IDisposable _selectedPathSub;
 
-    private string _selectedPath;
     private IExplorerItem? _root;
     private bool _disposed;
 
-    public string SelectedPath
+    public ExplorerVM(string? selectedPath) 
+        : base(selectedPath)
     {
-        get => _selectedPath;
-        set => this.RaiseAndSetIfChanged(ref _selectedPath, value);
-    }
-
-    public HierarchicalTreeDataGridSource<IExplorerItem> TreeSource { get; }
-
-    public ReactiveCommand<Unit, Unit> ChangeSelectedPathCommand { get; }
-
-    public ExplorerVM(string selectedPath)
-    {
-        _selectedPath = selectedPath;
-
         TreeSource = new HierarchicalTreeDataGridSource<IExplorerItem>(Array.Empty<IExplorerItem>())
         {
             Columns =
@@ -40,7 +28,7 @@ public class ExplorerVM : ReactiveObject, IDisposable
                         header: "Name",
                         cellTemplateResourceKey: "ItemNameCell",
                         cellEditingTemplateResourceKey: "ItemNameEditCell",
-                        width: new GridLength(1, GridUnitType.Star),
+                        width: GridLength.Star,
                         options: new TemplateColumnOptions<IExplorerItem>()
                         {
                             BeginEditGestures = BeginEditGestures.F2,
@@ -84,29 +72,31 @@ public class ExplorerVM : ReactiveObject, IDisposable
 
         TreeSource.RowSelection!.SingleSelect = false;
 
-        _selectedPathSub = this.WhenAnyValue(x => x.SelectedPath).Subscribe(x =>
-        {
-            _root?.Dispose();
-            _root = new ExplorerItemModel(SelectedPath, isDirectory: true, isRoot: true);
-            TreeSource.Items = new[] { _root };
-        });
-
-        ChangeSelectedPathCommand = ReactiveCommand.Create(ChangeSelectedPath);
+        _selectedPathSub = this.WhenAnyValue(x => x.SelectedPath).Subscribe(SelectedPathHasChanged);
     }
 
-    private void ChangeSelectedPath()
+    private void SelectedPathHasChanged(string? selectedPath)
     {
-        // TODO: Change selected path by last selected item on tree
+        if (string.IsNullOrEmpty(selectedPath) || !Directory.Exists(selectedPath))
+        {
+            _selectedPath = _root?.Path;
+            return;
+        }
+
+        _root?.Dispose();
+        _root = new ExplorerItemModel(SelectedPath!, isDirectory: true, isRoot: true);
+        TreeSource.Items = new[] { _root };
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
         if (_disposed)
             return; 
         _disposed = true;
 
+        base.Dispose();
+
         _selectedPathSub.Dispose();
         _root?.Dispose();
-        TreeSource.Dispose();
     }
 }
