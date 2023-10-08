@@ -56,7 +56,7 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
         }
     }
 
-    public string? StringSize => Size.FileSize();
+    public string? StringSize => IsDirectory ? "" : Size.FileSize();
 
     public DateTimeOffset Modified
     {
