@@ -125,17 +125,6 @@
         <Style Selector="TreeDataGrid TreeDataGridRow:nth-child(2n)">
           <Setter Property="Background"  Value="#20808080"/>
         </Style>
-
-        <!--Because of virtualization this does not work-->
-        <!--<Style Selector="TreeDataGrid TreeDataGridCellsPresenter">
-          <Setter Property="(i:Interaction.Behaviors)">
-            <i:BehaviorCollectionTemplate>
-              <i:BehaviorCollection>
-                <bhv:ShowFlyoutOnPointerPressed/>
-              </i:BehaviorCollection>
-            </i:BehaviorCollectionTemplate>
-          </Setter>
-        </Style>-->
       </TreeDataGrid.Styles>
 
     </TreeDataGrid>
