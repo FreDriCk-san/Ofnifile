@@ -18,7 +18,7 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
 
     private string _path;
     private string _name;
-    private string? _newName;
+    private string? _oldName;
     private long _size;
     private DateTimeOffset _modified;
     private DateTimeOffset _created;
@@ -42,8 +42,8 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
 
     public string? NewName
     {
-        get => _newName;
-        private set => this.RaiseAndSetIfChanged(ref _newName, value);
+        get => _oldName;
+        private set => this.RaiseAndSetIfChanged(ref _oldName, value);
     }
 
     public long Size
@@ -148,11 +148,11 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
         _watcher.Deleted += ItemDeleted;
         _watcher.Renamed += ItemRenamed;
 
-        CutCommand = ReactiveCommand.Create(Cut);
-        CopyCommand = ReactiveCommand.Create(Copy);
-        PasteCommand = ReactiveCommand.Create(Paste);
-        DeleteCommand = ReactiveCommand.Create(Delete);
-        RenameCommand = ReactiveCommand.Create(Rename);
+        CutCommand = ReactiveCommand.Create(CutItem);
+        CopyCommand = ReactiveCommand.Create(CopyItem);
+        PasteCommand = ReactiveCommand.Create(PasteItem);
+        DeleteCommand = ReactiveCommand.Create(DeleteItem);
+        RenameCommand = ReactiveCommand.Create(RenameItem);
     }
 
     private void ItemChanged(object sender, FileSystemEventArgs e)
@@ -271,36 +271,39 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
 
     public void BeginEdit()
     {
-        _newName = Name;
+        _oldName = Name;
     }
 
     public void CancelEdit()
     {
-        _newName = null;
+        if (!string.IsNullOrEmpty(_oldName) && _oldName != Name)
+            Name = _oldName;
+        
+        _oldName = null;
     }
 
     public void EndEdit()
     {
-        Rename(_newName);
-        _newName = null;
+        Rename(Name);
+        _oldName = null;
     }
 
-    private void Cut()
+    private void CutItem()
     {
         throw new NotImplementedException();
     }
 
-    private void Copy()
+    private void CopyItem()
     {
         throw new NotImplementedException();
     }
 
-    private void Paste()
+    private void PasteItem()
     {
         throw new NotImplementedException();
     }
 
-    private void Delete()
+    private void DeleteItem()
     {
         // Removal must listen item's parent
         if (IsDirectory && Directory.Exists(Path))
@@ -327,9 +330,9 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
         }
     }
 
-    private void Rename()
+    private void RenameItem()
     {
-        throw new NotImplementedException();
+        Rename(_oldName);
     }
 
     public bool Rename(string? newName)

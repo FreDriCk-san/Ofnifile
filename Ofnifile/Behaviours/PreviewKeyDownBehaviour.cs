@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Input;
 using Avalonia.Xaml.Interactivity;
+using System;
 using System.Windows.Input;
 
 namespace Ofnifile.Behaviours;
@@ -8,7 +9,7 @@ namespace Ofnifile.Behaviours;
 public class PreviewKeyDownBehaviour : Behavior<InputElement>
 {
     public static readonly StyledProperty<bool> HandleEventProperty
-        = AvaloniaProperty.Register<PreviewDoubleTappedBehaviour, bool>(nameof(HandleEvent));
+        = AvaloniaProperty.Register<PreviewKeyDownBehaviour, bool>(nameof(HandleEvent));
 
     public static readonly StyledProperty<ICommand?> CommandProperty =
         AvaloniaProperty.Register<PreviewKeyDownBehaviour, ICommand?>(nameof(Command));
@@ -17,7 +18,10 @@ public class PreviewKeyDownBehaviour : Behavior<InputElement>
         AvaloniaProperty.Register<PreviewKeyDownBehaviour, object?>(nameof(CommandParameter));
 
     public static readonly StyledProperty<Key?> DownKeyProperty = 
-        AvaloniaProperty.Register<PreviewDoubleTappedBehaviour, Key?>(nameof(DownKey));
+        AvaloniaProperty.Register<PreviewKeyDownBehaviour, Key?>(nameof(DownKey));
+
+    public static readonly StyledProperty<Type?> TargetSourceTypeProperty =
+        AvaloniaProperty.Register<PreviewKeyDownBehaviour, Type?>(nameof(TargetSourceType));
 
 
     public bool HandleEvent
@@ -44,6 +48,12 @@ public class PreviewKeyDownBehaviour : Behavior<InputElement>
         set => SetValue(DownKeyProperty, value);
     }
 
+    public Type? TargetSourceType
+    {
+        get => GetValue(TargetSourceTypeProperty);
+        set => SetValue(TargetSourceTypeProperty, value);
+    }
+
 
     protected override void OnAttached()
     {
@@ -60,6 +70,11 @@ public class PreviewKeyDownBehaviour : Behavior<InputElement>
     private void KeyDown(object? sender, KeyEventArgs e)
     {
         if (DownKey.GetValueOrDefault(e.Key) != e.Key)
+            return;
+
+        if (IsSet(TargetSourceTypeProperty) 
+            && e.Source is { } 
+            && TargetSourceType != e.Source.GetType())
             return;
 
         e.Handled = HandleEvent;
