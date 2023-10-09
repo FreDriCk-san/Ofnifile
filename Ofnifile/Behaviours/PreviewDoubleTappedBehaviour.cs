@@ -5,16 +5,16 @@ using System.Windows.Input;
 
 namespace Ofnifile.Behaviours;
 
-public class PreviewDoubleTappedBehaviour : Behavior<InputElement>
+public class PreviewDoubleTappedBehavior : Behavior<InputElement>
 {
     public static readonly StyledProperty<bool> HandleEventProperty
-        = AvaloniaProperty.Register<PreviewDoubleTappedBehaviour, bool>(nameof(HandleEvent));
+        = AvaloniaProperty.Register<PreviewDoubleTappedBehavior, bool>(nameof(HandleEvent));
 
     public static readonly StyledProperty<ICommand?> CommandProperty =
-        AvaloniaProperty.Register<PreviewDoubleTappedBehaviour, ICommand?>(nameof(Command));
+        AvaloniaProperty.Register<PreviewDoubleTappedBehavior, ICommand?>(nameof(Command));
 
     public static readonly StyledProperty<object?> CommandParameterProperty =
-        AvaloniaProperty.Register<PreviewDoubleTappedBehaviour, object?>(nameof(CommandParameter));
+        AvaloniaProperty.Register<PreviewDoubleTappedBehavior, object?>(nameof(CommandParameter));
 
 
     public bool HandleEvent

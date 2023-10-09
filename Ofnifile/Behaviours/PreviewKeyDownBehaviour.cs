@@ -6,22 +6,22 @@ using System.Windows.Input;
 
 namespace Ofnifile.Behaviours;
 
-public class PreviewKeyDownBehaviour : Behavior<InputElement>
+public class PreviewKeyDownBehavior : Behavior<InputElement>
 {
     public static readonly StyledProperty<bool> HandleEventProperty
-        = AvaloniaProperty.Register<PreviewKeyDownBehaviour, bool>(nameof(HandleEvent));
+        = AvaloniaProperty.Register<PreviewKeyDownBehavior, bool>(nameof(HandleEvent));
 
     public static readonly StyledProperty<ICommand?> CommandProperty =
-        AvaloniaProperty.Register<PreviewKeyDownBehaviour, ICommand?>(nameof(Command));
+        AvaloniaProperty.Register<PreviewKeyDownBehavior, ICommand?>(nameof(Command));
 
     public static readonly StyledProperty<object?> CommandParameterProperty =
-        AvaloniaProperty.Register<PreviewKeyDownBehaviour, object?>(nameof(CommandParameter));
+        AvaloniaProperty.Register<PreviewKeyDownBehavior, object?>(nameof(CommandParameter));
 
     public static readonly StyledProperty<Key?> DownKeyProperty = 
-        AvaloniaProperty.Register<PreviewKeyDownBehaviour, Key?>(nameof(DownKey));
+        AvaloniaProperty.Register<PreviewKeyDownBehavior, Key?>(nameof(DownKey));
 
     public static readonly StyledProperty<Type?> TargetSourceTypeProperty =
-        AvaloniaProperty.Register<PreviewKeyDownBehaviour, Type?>(nameof(TargetSourceType));
+        AvaloniaProperty.Register<PreviewKeyDownBehavior, Type?>(nameof(TargetSourceType));
 
 
     public bool HandleEvent

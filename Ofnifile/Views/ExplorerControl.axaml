@@ -17,11 +17,11 @@
   <Grid>
     <TreeDataGrid Source="{Binding TreeSource}">
       <Interaction.Behaviors>
-        <bhv:PreviewDoubleTappedBehaviour HandleEvent="True"
-                                          Command="{Binding ChangeSelectedPathCommand}"/>
-        <bhv:PreviewKeyDownBehaviour DownKey="Enter" 
-                                     TargetSourceType="{x:Type TreeDataGridTemplateCell}"
-                                     Command="{Binding ChangeSelectedPathCommand}"/>
+        <bhv:PreviewDoubleTappedBehavior HandleEvent="True"
+                                         Command="{Binding ChangeSelectedPathCommand}"/>
+        <bhv:PreviewKeyDownBehavior DownKey="Enter" 
+                                    TargetSourceType="{x:Type TreeDataGridTemplateCell}"
+                                    Command="{Binding ChangeSelectedPathCommand}"/>
       </Interaction.Behaviors>
 
       <TreeDataGrid.Resources>
@@ -32,7 +32,7 @@
                       Background="Transparent"
                       HorizontalAlignment="Stretch">
             <Interaction.Behaviors>
-              <bhv:ShowFlyoutOnPointerPressed/>
+              <bhv:ShowFlyoutOnPointerPressedBehavior/>
             </Interaction.Behaviors>
             <StackPanel.Styles>
               <Style Selector="FlyoutPresenter">
@@ -44,11 +44,23 @@
                       Placement="Pointer">
                 <Border BorderBrush="LightGray"
                         BorderThickness="1">
-                  <StackPanel>
+                  <StackPanel KeyboardNavigation.TabNavigation="Continue">
                     <MenuItem Theme="{StaticResource BaseMenuItem}"
-                            Header="Cut"
-                            Command="{Binding CutCommand}"
-                            />
+                              Header="Cut"
+                              Command="{Binding CutCommand}"
+                              >
+                      <Interaction.Behaviors>
+                        <bhv:FocusOnLoadedBehavior/>
+                      </Interaction.Behaviors>
+
+                      <!--<Interaction.Behaviors>
+                        <EventTriggerBehavior EventName="Loaded">
+                          <CallMethodAction MethodName="Focus"
+                                            TargetObject="{Binding $self}"/>
+                        </EventTriggerBehavior>
+                      </Interaction.Behaviors>-->
+
+                    </MenuItem>
                     <MenuItem Theme="{StaticResource BaseMenuItem}"
                               Header="Copy"
                               Command="{Binding CopyCommand}"

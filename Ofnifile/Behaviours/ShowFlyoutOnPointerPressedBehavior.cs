@@ -5,7 +5,7 @@ using Avalonia.Xaml.Interactivity;
 
 namespace Ofnifile.Behaviours;
 
-public class ShowFlyoutOnPointerPressed : Behavior<Control>
+public class ShowFlyoutOnPointerPressedBehavior : Behavior<Control>
 {
     protected override void OnAttached()
     {
