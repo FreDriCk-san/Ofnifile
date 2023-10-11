@@ -16,6 +16,11 @@
 
   <Grid>
     <TreeDataGrid Source="{Binding TreeSource}">
+      <Interaction.Behaviors>
+        <bhv:PreviewKeyDownBehavior DownKey="Enter"
+                                    TargetSourceType="{x:Type TreeDataGridTemplateCell}"
+                                    Command="{Binding ChangeSelectedPathCommand}"/>
+      </Interaction.Behaviors>
 
       <TreeDataGrid.Resources>
         <!-- Name template -->
@@ -27,8 +32,6 @@
             <Interaction.Behaviors>
               <bhv:ShowFlyoutOnPointerPressedBehavior/>
               <bhv:PreviewDoubleTappedBehavior Command="{Binding $parent[UserControl].DataContext.ChangeSelectedPathCommand}"/>
-              <bhv:PreviewKeyDownBehavior DownKey="Enter"
-                                          Command="{Binding ChangeSelectedPathCommand}"/>
             </Interaction.Behaviors>
             <StackPanel.Styles>
               <Style Selector="FlyoutPresenter">
