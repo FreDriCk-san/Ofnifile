@@ -1,4 +1,6 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Input;
 using Ofnifile.Interfaces;
 using ReactiveUI;
 using System;
@@ -25,7 +27,7 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
     public ReactiveCommand<Unit, Unit> CopySelectedItemsCommand { get; }
     public ReactiveCommand<Unit, Unit> PasteSavedItemsCommand { get; }
     public ReactiveCommand<Unit, Unit> DeleteSelectedItemsCommand { get; }
-    public ReactiveCommand<Unit, Unit> RenameSelectedItemCommand { get; }
+    public ReactiveCommand<TreeDataGridTemplateCell?, Unit> RenameSelectedItemCommand { get; }
 
 
     public BaseExplorerVM(string? selectedPath)
@@ -37,7 +39,7 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
         CopySelectedItemsCommand = ReactiveCommand.Create(CopySelectedItems);
         PasteSavedItemsCommand = ReactiveCommand.Create(PasteSavedItems);
         DeleteSelectedItemsCommand = ReactiveCommand.Create(DeleteSelectedItems);
-        RenameSelectedItemCommand = ReactiveCommand.Create(RenameSelectedItem);
+        RenameSelectedItemCommand = ReactiveCommand.Create<TreeDataGridTemplateCell?>(RenameSelectedItem);
     }
 
     private void ChangeSelectedPath()
@@ -71,10 +73,19 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
             item!.Delete();
     }
 
-    private void RenameSelectedItem()
+    private void RenameSelectedItem(TreeDataGridTemplateCell? cell)
     {
-        var lastSelectedItem = TreeSource.RowSelection!.SelectedItems!.Last();
-        lastSelectedItem!.BeginEdit();
+        if (cell is null) 
+            return;
+
+        var keyEvent = new KeyEventArgs
+        {
+            Source = this,
+            Key = Key.F2,
+            RoutedEvent = TreeDataGridTemplateCell.KeyDownEvent
+        };
+
+        cell.RaiseEvent(keyEvent);
     }
 
     public virtual void Dispose()

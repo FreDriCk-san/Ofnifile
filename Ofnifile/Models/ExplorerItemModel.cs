@@ -320,7 +320,9 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
 
     public bool Rename(string? newName)
     {
-        if (string.IsNullOrEmpty(newName) || newName == Name)
+        if (string.IsNullOrEmpty(newName) 
+            || string.IsNullOrEmpty(_oldName) 
+            || newName == _oldName)
             return false;
 
         string parentPath;
