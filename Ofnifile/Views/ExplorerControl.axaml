@@ -47,23 +47,15 @@
                   <StackPanel KeyboardNavigation.TabNavigation="Continue">
                     <MenuItem Theme="{StaticResource BaseMenuItem}"
                               Header="Cut"
-                              Command="{Binding CutCommand}"
+                              Command="{Binding $parent[UserControl].DataContext.CutSelectedItemsCommand}"
                               >
                       <Interaction.Behaviors>
                         <bhv:FocusOnLoadedBehavior/>
                       </Interaction.Behaviors>
-
-                      <!--<Interaction.Behaviors>
-                        <EventTriggerBehavior EventName="Loaded">
-                          <CallMethodAction MethodName="Focus"
-                                            TargetObject="{Binding $self}"/>
-                        </EventTriggerBehavior>
-                      </Interaction.Behaviors>-->
-
                     </MenuItem>
                     <MenuItem Theme="{StaticResource BaseMenuItem}"
                               Header="Copy"
-                              Command="{Binding CopyCommand}"
+                              Command="{Binding $parent[UserControl].DataContext.CopySelectedItemsCommand}"
                             />
                     <Border Height="1" 
                             Margin="4" 
@@ -73,18 +65,18 @@
                     <MenuItem Theme="{StaticResource BaseMenuItem}"
                               Header="Paste"
                               IsVisible="{Binding IsDirectory}"
-                              Command="{Binding PasteCommand}"
+                              Command="{Binding $parent[UserControl].DataContext.PasteSavedItemsCommand}"
                             />
                     <Border Height="1"
                             Margin="4"
                             Background="LightGray" />
                     <MenuItem Theme="{StaticResource BaseMenuItem}"
                               Header="Delete"
-                              Command="{Binding DeleteCommand}"
+                              Command="{Binding $parent[UserControl].DataContext.DeleteSelectedItemsCommand}"
                             />
                     <MenuItem Theme="{StaticResource BaseMenuItem}"
                               Header="Rename"
-                              Command="{Binding RenameCommand}"
+                              Command="{Binding $parent[UserControl].DataContext.RenameSelectedItemCommand}"
                             />
                   </StackPanel>
                 </Border>

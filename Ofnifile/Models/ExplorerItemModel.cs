@@ -92,16 +92,6 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
 
     public IReadOnlyList<IExplorerItem>? Children => _children ??= LoadChildren();
 
-    public ReactiveCommand<Unit, Unit> CutCommand { get; }
-
-    public ReactiveCommand<Unit, Unit> CopyCommand { get; }
-
-    public ReactiveCommand<Unit, Unit> PasteCommand { get; }
-
-    public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
-
-    public ReactiveCommand<Unit, Unit> RenameCommand { get; }
-
 
     public ExplorerItemModel(string path, bool isDirectory, bool isRoot = false)
     {
@@ -147,12 +137,6 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
         _watcher.Created += ItemCreated;
         _watcher.Deleted += ItemDeleted;
         _watcher.Renamed += ItemRenamed;
-
-        CutCommand = ReactiveCommand.Create(CutItem);
-        CopyCommand = ReactiveCommand.Create(CopyItem);
-        PasteCommand = ReactiveCommand.Create(PasteItem);
-        DeleteCommand = ReactiveCommand.Create(DeleteItem);
-        RenameCommand = ReactiveCommand.Create(RenameItem);
     }
 
     private void ItemChanged(object sender, FileSystemEventArgs e)
@@ -288,22 +272,22 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
         _oldName = null;
     }
 
-    private void CutItem()
+    public bool Cut()
     {
         throw new NotImplementedException();
     }
 
-    private void CopyItem()
+    public bool Copy()
     {
         throw new NotImplementedException();
     }
 
-    private void PasteItem()
+    public bool Paste()
     {
         throw new NotImplementedException();
     }
 
-    private void DeleteItem()
+    public bool Delete()
     {
         // Removal must listen item's parent
         if (IsDirectory && Directory.Exists(Path))
@@ -311,6 +295,7 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
             try
             {
                 Directory.Delete(Path, true);
+                return true;
             }
             catch (Exception exception)
             {
@@ -322,17 +307,15 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
             try
             {
                 File.Delete(Path);
+                return true;
             }
             catch (Exception exception)
             {
                 Debug.Fail(exception.Message);
             }
         }
-    }
 
-    private void RenameItem()
-    {
-        Rename(_oldName);
+        return false;
     }
 
     public bool Rename(string? newName)
@@ -405,11 +388,5 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
             foreach (var child in _children)
                 child.Dispose();
         }
-
-        CutCommand.Dispose();
-        CopyCommand.Dispose();
-        PasteCommand.Dispose();
-        DeleteCommand.Dispose();
-        RenameCommand.Dispose();
     }
 }

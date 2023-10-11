@@ -69,12 +69,9 @@ public interface IExplorerItem : IDisposable, IEditableObject
     /// </summary>
     IReadOnlyList<IExplorerItem>? Children { get; }
 
-    ReactiveCommand<Unit, Unit> CutCommand { get; }
-    ReactiveCommand<Unit, Unit> CopyCommand { get; }
-    ReactiveCommand<Unit, Unit> PasteCommand { get; }
-    ReactiveCommand<Unit, Unit> DeleteCommand { get; }
-    ReactiveCommand<Unit, Unit> RenameCommand { get; }
-
-
+    bool Cut();
+    bool Copy();
+    bool Paste();
+    bool Delete();
     bool Rename(string? newName);
 }
