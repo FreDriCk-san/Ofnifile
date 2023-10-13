@@ -3,5 +3,6 @@
   <!--Add here created files with styles-->
   <StyleInclude Source="/Themes/Path.axaml"/>
   <StyleInclude Source="/Themes/MenuItems.axaml"/>
+  <StyleInclude Source="/Themes/TabControls.axaml"/>
 
 </Styles>

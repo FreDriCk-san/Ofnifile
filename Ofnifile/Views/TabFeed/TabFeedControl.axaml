@@ -6,12 +6,12 @@
              x:Class="Ofnifile.Views.TabFeed.TabFeedControl">
 
   <Grid>
-    <TabControl Margin="5">
-      <TabItem Header="Main tab">
+    <TabControl Theme="{StaticResource TabControlBase}" Margin="5">
+      <TabItem Theme="{StaticResource TabItemBase}" Header="Main tab">
         <TextBlock Margin="5" Text="Main tab text"/>
       </TabItem>
       
-      <TabItem Header="View tab">
+      <TabItem Theme="{StaticResource TabItemBase}" Header="View tab">
         <TextBlock Margin="5" Text="View tab text"/>
       </TabItem>
     </TabControl>
