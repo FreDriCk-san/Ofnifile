@@ -13,6 +13,7 @@
 
     <ControlTheme x:Key="TabItemBase" TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
       <Setter Property="FontSize" Value="13"/>
+      <Setter Property="FontWeight" Value="DemiBold"/>
       <Setter Property="Height" Value="26"/>
       <Setter Property="VerticalAlignment" Value="Center"/>
       <Setter Property="Background" Value="#2B579A"/>
