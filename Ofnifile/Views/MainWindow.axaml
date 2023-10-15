@@ -5,7 +5,7 @@
         xmlns:tabfd="using:Ofnifile.Views.TabFeed"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="450"
         x:Class="Ofnifile.Views.MainWindow"
         x:DataType="vm:MainWindowVM"
         Icon="/Assets/avalonia-logo.ico"
@@ -14,7 +14,8 @@
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition MaxHeight="160"/>
-      <RowDefinition/>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
 
     <Border Grid.Row="0" BorderThickness="3,2,3,2" BorderBrush="LightGray">
@@ -22,6 +23,23 @@
     </Border>
 
     <Grid Grid.Row="1">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="auto"/>
+        <ColumnDefinition Width="0.7*"/>
+        <ColumnDefinition Width="0.3*"/>
+      </Grid.ColumnDefinitions>
+
+      <StackPanel Grid.Column="0" Orientation="Horizontal">
+        <Button Content="Back"/>
+        <Button Content="Forward"/>
+      </StackPanel>
+      
+      <TextBox Grid.Column="1" Margin="10,0,10,0" Text="{Binding SelectedPath}"/>
+
+      <TextBox Grid.Column="2" Margin="0,0,10,0" Text="Search"/>
+    </Grid>
+    
+    <Grid Grid.Row="2">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" MaxWidth="300"/>
         <ColumnDefinition Width="auto"/>

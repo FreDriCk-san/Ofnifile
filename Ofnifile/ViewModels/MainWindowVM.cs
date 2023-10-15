@@ -13,12 +13,18 @@ public class MainWindowVM : ReactiveObject, IDisposable
     private readonly IDisposable _quickVmPathSub;
     private readonly IDisposable _explorerPathSub;
 
-    private string _selectedPath;
+    private string? _selectedPath;
     private bool _disposed;
 
     public QuickAccessVM QuickAccessVM { get; init; }
     public TabFeedVM TabFeedVM { get; init; }
     public ExplorerVM ExplorerVM { get; init; }
+
+    public string? SelectedPath
+    {
+        get => _selectedPath;
+        set => this.RaiseAndSetIfChanged(ref _selectedPath, value);
+    }
 
     public IList<string> Drives { get; }
 
@@ -46,6 +52,9 @@ public class MainWindowVM : ReactiveObject, IDisposable
 
         if (ExplorerVM.SelectedPath != selectedPath)
             ExplorerVM.SelectedPath = selectedPath;
+
+        if (SelectedPath != selectedPath)
+            SelectedPath = selectedPath;
     }
 
     public void Dispose()
