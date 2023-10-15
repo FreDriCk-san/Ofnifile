@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:fvm="using:Ofnifile.ViewModels.TabFeed"
-             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="200"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="120"
              x:DataType="fvm:IndexFeedVM"
              x:Class="Ofnifile.Views.TabFeed.IndexFeedControl">
 
@@ -24,12 +24,12 @@
       <!--Buffer template-->
       <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
         <StackPanel Orientation="Horizontal">
-          <Button Content="Copy"/>
-          <Button Content="Insert"/>
+          <Button Theme="{StaticResource CopyButton}" Margin="5" Content="Copy"/>
+          <Button Theme="{StaticResource PasteButton}" Margin="5" Content="Paste"/>
 
           <StackPanel Orientation="Vertical">
-            <Button Content="Cut"/>
-            <Button Content="Copy path"/>
+            <Button Theme="{StaticResource CutHorizontalButton}" Margin="3" Content="Cut"/>
+            <Button Theme="{StaticResource ExportHorizontalButton}" Margin="3" Content="Copy path"/>
           </StackPanel>
         </StackPanel>
 
@@ -46,8 +46,8 @@
 
           <Rectangle Classes="split" Height="50"/>
 
-          <Button Content="Delete"/>
-          <Button Content="Rename"/>
+          <Button Theme="{StaticResource CloseButton}" Margin="5" Content="Delete"/>
+          <Button Theme="{StaticResource RenameButton}" Margin="5" Content="Rename"/>
         </StackPanel>
 
         <TextBlock HorizontalAlignment="Center" Text="Regularize"/>
@@ -57,7 +57,7 @@
 
       <!--Create-->
       <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
-        <Button Content="New folder"/>
+        <Button Theme="{StaticResource FolderPlusButton}" Margin="5" Content="New folder"/>
 
         <TextBlock HorizontalAlignment="Center" Text="Create"/>
       </StackPanel>
@@ -66,7 +66,7 @@
 
       <!--Open-->
       <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
-        <Button Content="Properties"/>
+        <Button Theme="{StaticResource FolderInfoButton}" Margin="5" Content="Properties"/>
 
         <TextBlock HorizontalAlignment="Center" Text="Open"/>
       </StackPanel>
@@ -76,9 +76,9 @@
       <!--Selection-->
       <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
         <StackPanel Orientation="Vertical">
-          <Button Content="Select all"/>
-          <Button Content="Remove selection"/>
-          <Button Content="Revert selection"/>
+          <Button Theme="{StaticResource SelectAllHorizontalButton}" Margin="2" Content="Select all"/>
+          <Button Theme="{StaticResource RemoveSelectHorizontalButton}" Margin="2" Content="Remove selection"/>
+          <Button Theme="{StaticResource ReverseSelectHorizontalButton}" Margin="2" Content="Revert selection"/>
         </StackPanel>
 
         <TextBlock HorizontalAlignment="Center" Text="Selection"/>

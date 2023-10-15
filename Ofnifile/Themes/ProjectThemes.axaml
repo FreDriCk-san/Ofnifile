@@ -4,5 +4,6 @@
   <StyleInclude Source="/Themes/Path.axaml"/>
   <StyleInclude Source="/Themes/MenuItems.axaml"/>
   <StyleInclude Source="/Themes/TabControls.axaml"/>
+  <StyleInclude Source="/Themes/Buttons.axaml"/>
 
 </Styles>
