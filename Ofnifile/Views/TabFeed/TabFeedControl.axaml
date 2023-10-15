@@ -2,16 +2,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:fvm="using:Ofnifile.ViewModels.TabFeed"
+             xmlns:fvw="using:Ofnifile.Views.TabFeed"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="200"
+             x:DataType="fvm:TabFeedVM"
              x:Class="Ofnifile.Views.TabFeed.TabFeedControl">
 
   <Grid>
     <TabControl Theme="{StaticResource TabControlBase}">
-      <TabItem Theme="{StaticResource TabItemBase}" Header="Main tab">
-        <TextBlock Margin="5" Text="Main tab text"/>
+      <TabItem Theme="{StaticResource TabItemBase}" Header="Index">
+        <fvw:IndexFeedControl DataContext="{Binding IndexFeedVM}"/>
       </TabItem>
       
-      <TabItem Theme="{StaticResource TabItemBase}" Header="View tab">
+      <TabItem Theme="{StaticResource TabItemBase}" Header="Vision">
         <TextBlock Margin="5" Text="View tab text"/>
       </TabItem>
     </TabControl>

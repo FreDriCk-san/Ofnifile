@@ -2,12 +2,12 @@
 
 public class TabFeedVM
 {
-    private IndexFeedVM _indexFeedVM;
-    private VisionFeedVM _visionFeedVM;
+    public IndexFeedVM IndexFeedVM { get; init; }
+    public VisionFeedVM VisionFeedVM { get; init; }
 
     public TabFeedVM()
     {
-        _indexFeedVM = new IndexFeedVM();
-        _visionFeedVM = new VisionFeedVM();
+        IndexFeedVM = new IndexFeedVM();
+        VisionFeedVM = new VisionFeedVM();
     }
 }

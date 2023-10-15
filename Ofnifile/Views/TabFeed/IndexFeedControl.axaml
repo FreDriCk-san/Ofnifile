@@ -1,0 +1,91 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:fvm="using:Ofnifile.ViewModels.TabFeed"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="200"
+             x:DataType="fvm:IndexFeedVM"
+             x:Class="Ofnifile.Views.TabFeed.IndexFeedControl">
+
+  <UserControl.Styles>
+    <Style Selector="Rectangle.split">
+      <Setter Property="VerticalAlignment" Value="Stretch"/>
+      <Setter Property="Width" Value="1"/>
+      <Setter Property="Margin" Value="5,1,5,1"/>
+      <Setter Property="StrokeThickness" Value="1"/>
+      <Setter Property="Stroke" Value="Gray"/>
+    </Style>
+  </UserControl.Styles>
+  
+  <Grid>
+
+    <StackPanel Orientation="Horizontal">
+      
+      <!--Buffer template-->
+      <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
+        <StackPanel Orientation="Horizontal">
+          <Button Content="Copy"/>
+          <Button Content="Insert"/>
+
+          <StackPanel Orientation="Vertical">
+            <Button Content="Cut"/>
+            <Button Content="Copy path"/>
+          </StackPanel>
+        </StackPanel>
+
+        <TextBlock HorizontalAlignment="Center" Text="Buffer template"/>
+      </StackPanel>
+
+      <Rectangle Classes="split"/>
+
+      <!--Regularize-->
+      <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
+        <StackPanel Orientation="Horizontal">
+          <SplitButton Content="Move to"/>
+          <SplitButton Content="Copy to"/>
+
+          <Rectangle Classes="split" Height="50"/>
+
+          <Button Content="Delete"/>
+          <Button Content="Rename"/>
+        </StackPanel>
+
+        <TextBlock HorizontalAlignment="Center" Text="Regularize"/>
+      </StackPanel>
+
+      <Rectangle Classes="split"/>
+
+      <!--Create-->
+      <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
+        <Button Content="New folder"/>
+
+        <TextBlock HorizontalAlignment="Center" Text="Create"/>
+      </StackPanel>
+
+      <Rectangle Classes="split"/>
+
+      <!--Open-->
+      <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
+        <Button Content="Properties"/>
+
+        <TextBlock HorizontalAlignment="Center" Text="Open"/>
+      </StackPanel>
+
+      <Rectangle Classes="split"/>
+
+      <!--Selection-->
+      <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
+        <StackPanel Orientation="Vertical">
+          <Button Content="Select all"/>
+          <Button Content="Remove selection"/>
+          <Button Content="Revert selection"/>
+        </StackPanel>
+
+        <TextBlock HorizontalAlignment="Center" Text="Selection"/>
+      </StackPanel>
+
+    </StackPanel>
+
+  </Grid>
+  
+</UserControl>
