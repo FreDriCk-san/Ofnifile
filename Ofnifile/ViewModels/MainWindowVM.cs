@@ -52,9 +52,9 @@ public class MainWindowVM : ReactiveObject, IDisposable
             ? "C:\\" 
             : Drives.FirstOrDefault() ?? "/";
 
-        TabFeedVM = new TabFeedVM();
         QuickAccessVM = new QuickAccessVM(Drives, _selectedPath);
         ExplorerVM = new ExplorerVM(_selectedPath);
+        TabFeedVM = new TabFeedVM(ExplorerVM);
 
         _quickVmPathSub = QuickAccessVM.WhenAnyValue(x => x.SelectedPath).Subscribe(SelectedPathHasChanged);
         _explorerPathSub = ExplorerVM.WhenAnyValue(x => x.SelectedPath).Subscribe(SelectedPathHasChanged);
@@ -90,7 +90,7 @@ public class MainWindowVM : ReactiveObject, IDisposable
         if (_redoPathHistory.Count == 0 || _redoPathHistory.Peek() == _selectedPath)
             return;
 
-
+        // TODO: Implement Redo logic
     }
 
     public void Dispose()

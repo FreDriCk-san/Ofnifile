@@ -22,66 +22,110 @@
     <StackPanel Orientation="Horizontal">
       
       <!--Buffer template-->
-      <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
+      <StackPanel Orientation="Vertical" 
+                  VerticalAlignment="Bottom">
         <StackPanel Orientation="Horizontal">
-          <Button Theme="{StaticResource CopyButton}" Margin="5" Content="Copy"/>
-          <Button Theme="{StaticResource PasteButton}" Margin="5" Content="Paste"/>
+          <Button Theme="{StaticResource CopyButton}" 
+                  Margin="5" 
+                  Content="Copy" 
+                  Command="{Binding CopySelectedItemsCommand}"/>
+          <Button Theme="{StaticResource PasteButton}" 
+                  Margin="5" 
+                  Content="Paste" 
+                  Command="{Binding PasteSavedItemsCommand}"/>
 
           <StackPanel Orientation="Vertical">
-            <Button Theme="{StaticResource CutHorizontalButton}" Margin="3" Content="Cut"/>
-            <Button Theme="{StaticResource ExportHorizontalButton}" Margin="3" Content="Copy path"/>
+            <Button Theme="{StaticResource CutHorizontalButton}" 
+                    Margin="3" 
+                    Content="Cut" 
+                    Command="{Binding CutSelectedItemsCommand}"/>
+            <Button Theme="{StaticResource ExportHorizontalButton}" 
+                    Margin="3" 
+                    Content="Copy path" 
+                    Command="{Binding CopySelectedItemPathCommand}"/>
           </StackPanel>
         </StackPanel>
 
-        <TextBlock HorizontalAlignment="Center" Text="Buffer template"/>
+        <TextBlock HorizontalAlignment="Center" 
+                   Text="Buffer template"/>
       </StackPanel>
 
       <Rectangle Classes="split"/>
 
       <!--Regularize-->
-      <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
+      <StackPanel Orientation="Vertical" 
+                  VerticalAlignment="Bottom">
         <StackPanel Orientation="Horizontal">
           <SplitButton Content="Move to"/>
           <SplitButton Content="Copy to"/>
 
-          <Rectangle Classes="split" Height="50"/>
+          <Rectangle Classes="split" 
+                     Height="50"/>
 
-          <Button Theme="{StaticResource CloseButton}" Margin="5" Content="Delete"/>
-          <Button Theme="{StaticResource RenameButton}" Margin="5" Content="Rename"/>
+          <Button Theme="{StaticResource CloseButton}" 
+                  Margin="5" 
+                  Content="Delete"
+                  Command="{Binding DeleteSelectedItemsCommand}"/>
+          <Button Theme="{StaticResource RenameButton}" 
+                  Margin="5" 
+                  Content="Rename"
+                  Command="{Binding RenameSelectedItemCommand}"/>
         </StackPanel>
 
-        <TextBlock HorizontalAlignment="Center" Text="Regularize"/>
+        <TextBlock HorizontalAlignment="Center" 
+                   Text="Regularize"/>
       </StackPanel>
 
       <Rectangle Classes="split"/>
 
       <!--Create-->
-      <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
-        <Button Theme="{StaticResource FolderPlusButton}" Margin="5" Content="New folder"/>
+      <StackPanel Orientation="Vertical" 
+                  VerticalAlignment="Bottom">
+        <Button Theme="{StaticResource FolderPlusButton}" 
+                Margin="5" 
+                Content="New folder"
+                Command="{Binding CreateNewFolderCommand}"/>
 
-        <TextBlock HorizontalAlignment="Center" Text="Create"/>
+        <TextBlock HorizontalAlignment="Center" 
+                   Text="Create"/>
       </StackPanel>
 
       <Rectangle Classes="split"/>
 
       <!--Open-->
-      <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
-        <Button Theme="{StaticResource FolderInfoButton}" Margin="5" Content="Properties"/>
+      <StackPanel Orientation="Vertical" 
+                  VerticalAlignment="Bottom">
+        <Button Theme="{StaticResource FolderInfoButton}" 
+                Margin="5" 
+                Content="Properties"
+                Command="{Binding ShowFolderPropertiesCommand}"/>
 
-        <TextBlock HorizontalAlignment="Center" Text="Open"/>
+        <TextBlock HorizontalAlignment="Center" 
+                   Text="Open"/>
       </StackPanel>
 
       <Rectangle Classes="split"/>
 
       <!--Selection-->
-      <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
+      <StackPanel Orientation="Vertical" 
+                  VerticalAlignment="Bottom">
         <StackPanel Orientation="Vertical">
-          <Button Theme="{StaticResource SelectAllHorizontalButton}" Margin="2" Content="Select all"/>
-          <Button Theme="{StaticResource RemoveSelectHorizontalButton}" Margin="2" Content="Remove selection"/>
-          <Button Theme="{StaticResource ReverseSelectHorizontalButton}" Margin="2" Content="Revert selection"/>
+          <Button Theme="{StaticResource SelectAllHorizontalButton}" 
+                  Margin="2" 
+                  Content="Select all"
+                  Command="{Binding SelectAllItemsCommand}"/>
+          <Button Theme="{StaticResource RemoveSelectHorizontalButton}" 
+                  Margin="2" 
+                  Content="Remove selection"
+                  Command="{Binding RemoveSelectionCommand}"/>
+          <Button Theme="{StaticResource ReverseSelectHorizontalButton}" 
+                  Margin="2" 
+                  Content="Revert selection"
+                  Command="{Binding RevertSelectionCommand}"/>
         </StackPanel>
 
-        <TextBlock HorizontalAlignment="Center" Text="Selection"/>
+        <TextBlock HorizontalAlignment="Center" 
+                   Text="Selection"/>
       </StackPanel>
 
     </StackPanel>

@@ -9,7 +9,7 @@ using System.IO;
 
 namespace Ofnifile.ViewModels;
 
-public class ExplorerVM : BaseExplorerVM
+public class ExplorerVM : BaseExplorerVM, IExplorerVM
 {
     private readonly IDisposable _selectedPathSub;
 
@@ -88,10 +88,77 @@ public class ExplorerVM : BaseExplorerVM
         TreeSource.Items = new[] { _root };
     }
 
+    public bool CopySelectedItems()
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool PasteSavedItems()
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool CutSelectedItems()
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool CopySelectedItemPath()
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool DeleteSelectedItems()
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool RenameSelectedItem()
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool CreateNewFolder()
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool ShowFolderProperties()
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool SelectAllItems()
+    {
+        if (TreeSource.Rows.Count == 0)
+            return false;
+
+        for (int i = 1; i < TreeSource.Rows.Count; i++)
+            TreeSource.RowSelection!.Select(i);
+
+        return true;
+    }
+
+    public bool RemoveSelection()
+    {
+        if (TreeSource.Rows.Count == 0)
+            return false;
+
+        for (int i = 1; i < TreeSource.Rows.Count; i++)
+            TreeSource.RowSelection!.Deselect(i);
+
+        return true;
+    }
+
+    public bool RevertSelection()
+    {
+        throw new NotImplementedException();
+    }
+
     public override void Dispose()
     {
         if (_disposed)
-            return; 
+            return;
         _disposed = true;
 
         base.Dispose();
