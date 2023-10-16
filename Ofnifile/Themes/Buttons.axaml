@@ -406,6 +406,78 @@
       </Style>
     </ControlTheme>
 
+    <ControlTheme x:Key="ArrowLeftThickHorizontalButton" TargetType="Button" BasedOn="{StaticResource ButtonBase}">
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border Name="buttonBorder"
+                    Background="Transparent"
+                    BorderThickness="0">
+              <StackPanel Orientation="Horizontal">
+                <Grid VerticalAlignment="Center"
+                      HorizontalAlignment="Center"
+                      Width="26"
+                      Height="26">
+                  <Path Name="icon"
+                        Theme="{StaticResource ArrowLeftThickPath}"
+                        Margin="0,0,0,0"
+                        Width="22"
+                        Height="22"/>
+                </Grid>
+                <TextBlock Name="text" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{TemplateBinding Content}" />
+              </StackPanel>
+            </Border>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+
+      <Style Selector="^:pointerover /template/ Border#buttonBorder">
+        <Setter Property="Background" Value="LightGray"/>
+      </Style>
+
+      <Style Selector="^:pressed">
+        <Style Selector="^ /template/ Path#icon">
+          <Setter Property="Fill" Value="Black"/>
+        </Style>
+      </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="ArrowRightThickHorizontalButton" TargetType="Button" BasedOn="{StaticResource ButtonBase}">
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border Name="buttonBorder"
+                    Background="Transparent"
+                    BorderThickness="0">
+              <StackPanel Orientation="Horizontal">
+                <Grid VerticalAlignment="Center"
+                      HorizontalAlignment="Center"
+                      Width="26"
+                      Height="26">
+                  <Path Name="icon"
+                        Theme="{StaticResource ArrowRightThickPath}"
+                        Margin="0,0,0,0"
+                        Width="22"
+                        Height="22"/>
+                </Grid>
+                <TextBlock Name="text" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{TemplateBinding Content}" />
+              </StackPanel>
+            </Border>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+
+      <Style Selector="^:pointerover /template/ Border#buttonBorder">
+        <Setter Property="Background" Value="LightGray"/>
+      </Style>
+
+      <Style Selector="^:pressed">
+        <Style Selector="^ /template/ Path#icon">
+          <Setter Property="Fill" Value="Black"/>
+        </Style>
+      </Style>
+    </ControlTheme>
+
   </Styles.Resources>
   
   <Design.PreviewWith>
@@ -446,6 +518,8 @@
         <sys:String>SelectAllHorizontalButton</sys:String>
         <sys:String>RemoveSelectHorizontalButton</sys:String>
         <sys:String>ReverseSelectHorizontalButton</sys:String>
+        <sys:String>ArrowLeftThickHorizontalButton</sys:String>
+        <sys:String>ArrowRightThickHorizontalButton</sys:String>
       </ItemsControl>
     </StackPanel>
   </Design.PreviewWith>
