@@ -1,11 +1,13 @@
-﻿namespace Ofnifile.Interfaces;
+﻿using System.Threading.Tasks;
+
+namespace Ofnifile.Interfaces;
 
 public interface IExplorerVM
 {
     bool CopySelectedItems();
     bool PasteSavedItems();
     bool CutSelectedItems();
-    bool CopySelectedItemPath();
+    Task<bool> CopySelectedItemPath();
     bool DeleteSelectedItems();
     bool RenameSelectedItem();
     bool CreateNewFolder();

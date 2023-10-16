@@ -23,10 +23,10 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
     public HierarchicalTreeDataGridSource<IExplorerItem> TreeSource { get; init; }
 
     public ReactiveCommand<Unit, Unit> ChangeSelectedPathCommand { get; }
-    public ReactiveCommand<Unit, Unit> CutSelectedItemsCommand { get; }
-    public ReactiveCommand<Unit, Unit> CopySelectedItemsCommand { get; }
-    public ReactiveCommand<Unit, Unit> PasteSavedItemsCommand { get; }
-    public ReactiveCommand<Unit, Unit> DeleteSelectedItemsCommand { get; }
+    public ReactiveCommand<Unit, bool> CutSelectedItemsCommand { get; }
+    public ReactiveCommand<Unit, bool> CopySelectedItemsCommand { get; }
+    public ReactiveCommand<Unit, bool> PasteSavedItemsCommand { get; }
+    public ReactiveCommand<Unit, bool> DeleteSelectedItemsCommand { get; }
     public ReactiveCommand<TreeDataGridTemplateCell?, Unit> RenameSelectedItemCommand { get; }
 
 
@@ -51,26 +51,31 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
         SelectedPath = lastSelectedItem.Path;
     }
 
-    private void CutSelectedItems()
+    protected bool CutSelectedItems()
     {
-
+        throw new NotImplementedException();
     }
 
-    private void CopySelectedItems()
+    protected bool CopySelectedItems()
     {
-
+        throw new NotImplementedException();
     }
 
-    private void PasteSavedItems()
+    protected bool PasteSavedItems()
     {
-
+        throw new NotImplementedException();
     }
 
-    private void DeleteSelectedItems()
+    protected bool DeleteSelectedItems()
     {
-        var selectedItems = TreeSource.RowSelection!.SelectedItems!;
+        var selectedItems = TreeSource.RowSelection!.SelectedItems!.Where(x => !TreeSource.Items.Contains(x));
+        if (!selectedItems.Any())
+            return false;
+
         foreach (var item in selectedItems)
             item!.Delete();
+
+        return true;
     }
 
     private void RenameSelectedItem(TreeDataGridTemplateCell? cell)
@@ -86,6 +91,7 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
         };
 
         cell.RaiseEvent(keyEvent);
+        return;
     }
 
     public virtual void Dispose()

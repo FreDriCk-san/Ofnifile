@@ -28,7 +28,7 @@ public class IndexFeedVM : ReactiveObject
         CopySelectedItemsCommand = ReactiveCommand.Create(explorerVM.CopySelectedItems);
         PasteSavedItemsCommand = ReactiveCommand.Create(explorerVM.PasteSavedItems);
         CutSelectedItemsCommand = ReactiveCommand.Create(explorerVM.CutSelectedItems);
-        CopySelectedItemPathCommand = ReactiveCommand.Create(explorerVM.CopySelectedItemPath);
+        CopySelectedItemPathCommand = ReactiveCommand.CreateFromTask(explorerVM.CopySelectedItemPath);
         DeleteSelectedItemsCommand = ReactiveCommand.Create(explorerVM.DeleteSelectedItems);
         RenameSelectedItemCommand = ReactiveCommand.Create(explorerVM.RenameSelectedItem);
         CreateNewFolderCommand = ReactiveCommand.Create(explorerVM.CreateNewFolder);

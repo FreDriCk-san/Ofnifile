@@ -1,4 +1,6 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Ofnifile.Interfaces;
 using Ofnifile.Misc;
@@ -6,6 +8,8 @@ using Ofnifile.Models;
 using ReactiveUI;
 using System;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Ofnifile.ViewModels;
 
@@ -88,29 +92,43 @@ public class ExplorerVM : BaseExplorerVM, IExplorerVM
         TreeSource.Items = new[] { _root };
     }
 
-    public bool CopySelectedItems()
+    public new bool CopySelectedItems()
     {
-        throw new NotImplementedException();
+        return base.CopySelectedItems();
     }
 
-    public bool PasteSavedItems()
+    public new bool PasteSavedItems()
     {
-        throw new NotImplementedException();
+        return base.PasteSavedItems();
     }
 
-    public bool CutSelectedItems()
+    public new bool CutSelectedItems()
     {
-        throw new NotImplementedException();
+        return base.CutSelectedItems();
     }
 
-    public bool CopySelectedItemPath()
+    public async Task<bool> CopySelectedItemPath()
     {
-        throw new NotImplementedException();
+        var lastSelectedItem = TreeSource.RowSelection!.SelectedItems.LastOrDefault();
+        if (lastSelectedItem is null)
+            return false;
+
+        var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+        if (mainWindow is null)
+            return false;
+
+        try
+        {
+            await mainWindow.Clipboard!.SetTextAsync(lastSelectedItem.Path);
+        }
+        catch { return false; }
+
+        return true;
     }
 
-    public bool DeleteSelectedItems()
+    public new bool DeleteSelectedItems()
     {
-        throw new NotImplementedException();
+        return base.DeleteSelectedItems();
     }
 
     public bool RenameSelectedItem()
@@ -134,7 +152,7 @@ public class ExplorerVM : BaseExplorerVM, IExplorerVM
             return false;
 
         for (int i = 1; i < TreeSource.Rows.Count; i++)
-            TreeSource.RowSelection!.Select(i);
+            TreeSource.RowSelection!.Select(new IndexPath(0, i - 1));
 
         return true;
     }
@@ -145,14 +163,26 @@ public class ExplorerVM : BaseExplorerVM, IExplorerVM
             return false;
 
         for (int i = 1; i < TreeSource.Rows.Count; i++)
-            TreeSource.RowSelection!.Deselect(i);
+            TreeSource.RowSelection!.Deselect(new IndexPath(0, i - 1));
 
         return true;
     }
 
     public bool RevertSelection()
     {
-        throw new NotImplementedException();
+        if (TreeSource.Rows.Count == 0)
+            return false;
+
+        for (int i = 1; i < TreeSource.Rows.Count; i++)
+        {
+            var indexPath = new IndexPath(0, i - 1);
+            if (TreeSource.RowSelection!.IsSelected(indexPath))
+                TreeSource.RowSelection!.Deselect(indexPath);
+            else
+                TreeSource.RowSelection!.Select(indexPath);
+        }
+
+        return true;
     }
 
     public override void Dispose()
