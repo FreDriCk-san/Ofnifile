@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Runtime.InteropServices;
 
 namespace Ofnifile.ViewModels;
@@ -13,6 +14,8 @@ public class MainWindowVM : ReactiveObject, IDisposable
     private readonly IDisposable _quickVmPathSub;
     private readonly IDisposable _explorerPathSub;
 
+    private Stack<string> _undoPathHistory = new();
+    private Stack<string> _redoPathHistory = new();
     private string? _selectedPath;
     private bool _disposed;
 
@@ -23,10 +26,23 @@ public class MainWindowVM : ReactiveObject, IDisposable
     public string? SelectedPath
     {
         get => _selectedPath;
-        set => this.RaiseAndSetIfChanged(ref _selectedPath, value);
+        set
+        {
+            if (!string.IsNullOrEmpty(_selectedPath) 
+                && (_undoPathHistory.Count == 0 || _undoPathHistory.Peek() != value))
+            {
+                _undoPathHistory.Push(_selectedPath);
+                _redoPathHistory.Clear();
+            }
+
+            this.RaiseAndSetIfChanged(ref _selectedPath, value);
+        }
     }
 
     public IList<string> Drives { get; }
+
+    public ReactiveCommand<Unit, Unit> UndoPathCommand { get; }
+    public ReactiveCommand<Unit, Unit> RedoPathCommand { get; }
 
     public MainWindowVM()
     {
@@ -42,6 +58,9 @@ public class MainWindowVM : ReactiveObject, IDisposable
 
         _quickVmPathSub = QuickAccessVM.WhenAnyValue(x => x.SelectedPath).Subscribe(SelectedPathHasChanged);
         _explorerPathSub = ExplorerVM.WhenAnyValue(x => x.SelectedPath).Subscribe(SelectedPathHasChanged);
+
+        UndoPathCommand = ReactiveCommand.Create(UndoPath);
+        RedoPathCommand = ReactiveCommand.Create(RedoPath);
     }
 
     private void SelectedPathHasChanged(string? selectedPath)
@@ -55,6 +74,23 @@ public class MainWindowVM : ReactiveObject, IDisposable
 
         if (SelectedPath != selectedPath)
             SelectedPath = selectedPath;
+    }
+
+    private void UndoPath()
+    {
+        if (_undoPathHistory.Count == 0 || _undoPathHistory.Peek() == _selectedPath)
+            return;
+
+        SelectedPathHasChanged(_undoPathHistory.Peek());
+        _undoPathHistory.Pop();
+    }
+
+    private void RedoPath()
+    {
+        if (_redoPathHistory.Count == 0 || _redoPathHistory.Peek() == _selectedPath)
+            return;
+
+
     }
 
     public void Dispose()
