@@ -11,7 +11,7 @@ public class MessageBus : IMessageBus
     private readonly Dictionary<Type, List<object>> _observers = new();
     private bool _isDisposed;
 
-    public async void Send<T>(T message) where T : IMessage
+    public async Task Send<T>(T message) where T : IMessage
     {
         if (message is null)
             throw new ArgumentNullException(nameof(message));
@@ -25,8 +25,8 @@ public class MessageBus : IMessageBus
             return;
         
         foreach (var handler in subscriptions
-            .Select(s => s as ISubscription<T>)
-            .Select(s => s!.Handler))
+                                .OfType<ISubscription<T>>()
+                                .Select(s => s!.Handler))
         {
             if (handler is { })
                 await handler.Invoke(message);
@@ -43,7 +43,7 @@ public class MessageBus : IMessageBus
             : new List<object>();
 
         var existingSubscription = subscriptions
-                                   .Select(s => s as ISubscription<T>)
+                                   .OfType<ISubscription<T>>()
                                    .FirstOrDefault(s => s!.Handler == callBack);
 
         if (existingSubscription is null)

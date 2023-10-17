@@ -1,14 +1,12 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
+﻿using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Ofnifile.Interfaces;
 using Ofnifile.Misc;
+using Ofnifile.Misc.MessageBus;
 using Ofnifile.Models;
 using ReactiveUI;
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Ofnifile.ViewModels;
@@ -19,6 +17,8 @@ public class ExplorerVM : BaseExplorerVM
 
     private IExplorerItem? _root;
     private bool _disposed;
+
+    public Interfaces.MessageBus.IMessageBus MessageBus => _messageBus;
 
     public ExplorerVM(string? selectedPath, Interfaces.MessageBus.IMessageBus messageBus) 
         : base(selectedPath, messageBus)
@@ -77,6 +77,17 @@ public class ExplorerVM : BaseExplorerVM
         TreeSource.RowSelection!.SingleSelect = false;
 
         _selectedPathSub = this.WhenAnyValue(x => x.SelectedPath).Subscribe(SelectedPathHasChanged);
+
+        _messageBus.Subscribe<CutSelectedItems>(CutSelectedItemsCallback);
+        _messageBus.Subscribe<CopySelectedItems>(CopySelectedItemsCallback);
+        _messageBus.Subscribe<PasteSavedItems>(PasteSavedItemsCallback);
+        _messageBus.Subscribe<DeleteSelectedItems>(DeleteSelectedItemsCallback);
+        _messageBus.Subscribe<CopySelectedItemPath>(CopySelectedItemPathCallback);
+        _messageBus.Subscribe<CreateNewFolder>(CreateNewFolderCallback);
+        _messageBus.Subscribe<ShowFolderProperties>(ShowFolderPropertiesCallback);
+        _messageBus.Subscribe<SelectAllItems>(SelectAllItemsCallback);
+        _messageBus.Subscribe<RemoveSelection>(RemoveSelectionCallback);
+        _messageBus.Subscribe<RevertSelection>(RevertSelectionCallback);
     }
 
     private void SelectedPathHasChanged(string? selectedPath)
@@ -90,6 +101,86 @@ public class ExplorerVM : BaseExplorerVM
         _root?.Dispose();
         _root = new ExplorerItemModel(SelectedPath!, isDirectory: true, isRoot: true);
         TreeSource.Items = new[] { _root };
+    }
+
+    private Task CutSelectedItemsCallback(CutSelectedItems call)
+    {
+        if (call.Explorer is ExplorerType.Explorer)
+            base.CutSelectedItems();
+
+        return Task.CompletedTask;
+    }
+
+    private Task CopySelectedItemsCallback(CopySelectedItems call)
+    {
+        if (call.Explorer is ExplorerType.Explorer)
+            base.CopySelectedItems();
+
+        return Task.CompletedTask;
+    }
+
+    private Task PasteSavedItemsCallback(PasteSavedItems call)
+    {
+        if (call.Explorer is ExplorerType.Explorer)
+            base.PasteSavedItems();
+
+        return Task.CompletedTask;
+    }
+
+    private Task DeleteSelectedItemsCallback(DeleteSelectedItems call)
+    {
+        if (call.Explorer is ExplorerType.Explorer)
+            base.DeleteSelectedItems();
+
+        return Task.CompletedTask;
+    }
+
+    private Task CopySelectedItemPathCallback(CopySelectedItemPath call)
+    {
+        if (call.Explorer is ExplorerType.Explorer)
+            return base.CopySelectedItemPath();
+
+        return Task.CompletedTask;
+    }
+
+    private Task CreateNewFolderCallback(CreateNewFolder call)
+    {
+        if (call.Explorer is ExplorerType.Explorer)
+            base.CreateNewFolder();
+
+        return Task.CompletedTask;
+    }
+
+    private Task ShowFolderPropertiesCallback(ShowFolderProperties call)
+    {
+        if (call.Explorer is ExplorerType.Explorer)
+            base.ShowFolderProperties();
+
+        return Task.CompletedTask;
+    }
+
+    private Task SelectAllItemsCallback(SelectAllItems call)
+    {
+        if (call.Explorer is ExplorerType.Explorer)
+            base.SelectAllItems();
+
+        return Task.CompletedTask;
+    }
+
+    private Task RemoveSelectionCallback(RemoveSelection call)
+    {
+        if (call.Explorer is ExplorerType.Explorer)
+            base.RemoveSelection();
+
+        return Task.CompletedTask;
+    }
+
+    private Task RevertSelectionCallback(RevertSelection call)
+    {
+        if (call.Explorer is ExplorerType.Explorer)
+            base.RevertSelection();
+
+        return Task.CompletedTask;
     }
 
     public override void Dispose()

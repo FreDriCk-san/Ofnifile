@@ -4,7 +4,6 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Ofnifile.Interfaces;
-using Ofnifile.Misc;
 using Ofnifile.Misc.MessageBus;
 using ReactiveUI;
 using System;
@@ -34,7 +33,7 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
     public ReactiveCommand<Unit, bool> CopySelectedItemsCommand { get; }
     public ReactiveCommand<Unit, bool> PasteSavedItemsCommand { get; }
     public ReactiveCommand<Unit, bool> DeleteSelectedItemsCommand { get; }
-    public ReactiveCommand<TreeDataGridTemplateCell?, Unit> RenameSelectedItemCommand { get; }
+    public ReactiveCommand<Unit, Unit> RenameSelectedItemCommand { get; }
 
 
     public BaseExplorerVM(string? selectedPath, Interfaces.MessageBus.IMessageBus messageBus)
@@ -47,9 +46,8 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
         CopySelectedItemsCommand = ReactiveCommand.Create(CopySelectedItems);
         PasteSavedItemsCommand = ReactiveCommand.Create(PasteSavedItems);
         DeleteSelectedItemsCommand = ReactiveCommand.Create(DeleteSelectedItems);
-        RenameSelectedItemCommand = ReactiveCommand.Create<TreeDataGridTemplateCell?>(RenameSelectedItem);
-
-        // TODO: Subscribe on actions
+        RenameSelectedItemCommand = ReactiveCommand.CreateFromTask(
+            x => _messageBus.Send(new RenameLastSelectedItem(Misc.ExplorerType.Explorer)));
     }
 
     private void ChangeSelectedPath()
@@ -61,22 +59,22 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
         SelectedPath = lastSelectedItem.Path;
     }
 
-    private bool CutSelectedItems()
+    protected bool CutSelectedItems()
     {
         throw new NotImplementedException();
     }
 
-    private bool CopySelectedItems()
+    protected bool CopySelectedItems()
     {
         throw new NotImplementedException();
     }
 
-    private bool PasteSavedItems()
+    protected bool PasteSavedItems()
     {
         throw new NotImplementedException();
     }
 
-    private bool DeleteSelectedItems()
+    protected bool DeleteSelectedItems()
     {
         var selectedItems = TreeSource.RowSelection!.SelectedItems!.Where(x => !TreeSource.Items.Contains(x));
         if (!selectedItems.Any())
@@ -88,23 +86,7 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
         return true;
     }
 
-    private void RenameSelectedItem(TreeDataGridTemplateCell? cell)
-    {
-        if (cell is null) 
-            return;
-
-        var keyEvent = new KeyEventArgs
-        {
-            Source = this,
-            Key = Key.F2,
-            RoutedEvent = TreeDataGridTemplateCell.KeyDownEvent
-        };
-
-        cell.RaiseEvent(keyEvent);
-        return;
-    }
-
-    private async Task<bool> CopySelectedItemPath()
+    protected async Task<bool> CopySelectedItemPath()
     {
         var lastSelectedItem = TreeSource.RowSelection!.SelectedItems.LastOrDefault();
         if (lastSelectedItem is null)
@@ -123,17 +105,17 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
         return true;
     }
 
-    private bool CreateNewFolder()
+    protected bool CreateNewFolder()
     {
         throw new NotImplementedException();
     }
 
-    private bool ShowFolderProperties()
+    protected bool ShowFolderProperties()
     {
         throw new NotImplementedException();
     }
 
-    private bool SelectAllItems()
+    protected bool SelectAllItems()
     {
         if (TreeSource.Rows.Count == 0)
             return false;
@@ -144,7 +126,7 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
         return true;
     }
 
-    private bool RemoveSelection()
+    protected bool RemoveSelection()
     {
         if (TreeSource.Rows.Count == 0)
             return false;
@@ -155,7 +137,7 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
         return true;
     }
 
-    private bool RevertSelection()
+    protected bool RevertSelection()
     {
         if (TreeSource.Rows.Count == 0)
             return false;

@@ -56,7 +56,7 @@ public class MainWindowVM : ReactiveObject, IDisposable
 
         QuickAccessVM = new QuickAccessVM(Drives, _selectedPath, _messageBus);
         ExplorerVM = new ExplorerVM(_selectedPath, _messageBus);
-        TabFeedVM = new TabFeedVM(ExplorerVM, _messageBus);
+        TabFeedVM = new TabFeedVM(_messageBus);
 
         _quickVmPathSub = QuickAccessVM.WhenAnyValue(x => x.SelectedPath).Subscribe(SelectedPathHasChanged);
         _explorerPathSub = ExplorerVM.WhenAnyValue(x => x.SelectedPath).Subscribe(SelectedPathHasChanged);

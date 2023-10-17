@@ -2,6 +2,6 @@
 
 public enum ExplorerType
 {
-    BaseExplorer = 0,
+    Explorer = 0,
     QuickAccess = 1
 }

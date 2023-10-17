@@ -15,7 +15,7 @@
   </UserControl.Resources>
 
   <Grid>
-    <TreeDataGrid Source="{Binding TreeSource}">
+    <TreeDataGrid x:Name="Tree" Source="{Binding TreeSource}">
       <Interaction.Behaviors>
         <bhv:PreviewKeyDownBehavior DownKey="Enter"
                                     TargetSourceType="{x:Type TreeDataGridExpanderCell}"
@@ -76,7 +76,6 @@
                     <MenuItem Theme="{StaticResource BaseMenuItem}"
                               Header="Rename"
                               Command="{Binding $parent[UserControl].DataContext.RenameSelectedItemCommand}"
-                              CommandParameter="{Binding $parent[TreeDataGridTemplateCell]}"
                             />
                   </StackPanel>
                 </Border>
