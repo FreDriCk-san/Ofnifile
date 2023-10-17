@@ -13,15 +13,15 @@ using System.Threading.Tasks;
 
 namespace Ofnifile.ViewModels;
 
-public class ExplorerVM : BaseExplorerVM, IExplorerVM
+public class ExplorerVM : BaseExplorerVM
 {
     private readonly IDisposable _selectedPathSub;
 
     private IExplorerItem? _root;
     private bool _disposed;
 
-    public ExplorerVM(string? selectedPath) 
-        : base(selectedPath)
+    public ExplorerVM(string? selectedPath, Interfaces.MessageBus.IMessageBus messageBus) 
+        : base(selectedPath, messageBus)
     {
         TreeSource = new HierarchicalTreeDataGridSource<IExplorerItem>(Array.Empty<IExplorerItem>())
         {
@@ -90,99 +90,6 @@ public class ExplorerVM : BaseExplorerVM, IExplorerVM
         _root?.Dispose();
         _root = new ExplorerItemModel(SelectedPath!, isDirectory: true, isRoot: true);
         TreeSource.Items = new[] { _root };
-    }
-
-    public new bool CopySelectedItems()
-    {
-        return base.CopySelectedItems();
-    }
-
-    public new bool PasteSavedItems()
-    {
-        return base.PasteSavedItems();
-    }
-
-    public new bool CutSelectedItems()
-    {
-        return base.CutSelectedItems();
-    }
-
-    public async Task<bool> CopySelectedItemPath()
-    {
-        var lastSelectedItem = TreeSource.RowSelection!.SelectedItems.LastOrDefault();
-        if (lastSelectedItem is null)
-            return false;
-
-        var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
-        if (mainWindow is null)
-            return false;
-
-        try
-        {
-            await mainWindow.Clipboard!.SetTextAsync(lastSelectedItem.Path);
-        }
-        catch { return false; }
-
-        return true;
-    }
-
-    public new bool DeleteSelectedItems()
-    {
-        return base.DeleteSelectedItems();
-    }
-
-    public bool RenameSelectedItem()
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool CreateNewFolder()
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool ShowFolderProperties()
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool SelectAllItems()
-    {
-        if (TreeSource.Rows.Count == 0)
-            return false;
-
-        for (int i = 1; i < TreeSource.Rows.Count; i++)
-            TreeSource.RowSelection!.Select(new IndexPath(0, i - 1));
-
-        return true;
-    }
-
-    public bool RemoveSelection()
-    {
-        if (TreeSource.Rows.Count == 0)
-            return false;
-
-        for (int i = 1; i < TreeSource.Rows.Count; i++)
-            TreeSource.RowSelection!.Deselect(new IndexPath(0, i - 1));
-
-        return true;
-    }
-
-    public bool RevertSelection()
-    {
-        if (TreeSource.Rows.Count == 0)
-            return false;
-
-        for (int i = 1; i < TreeSource.Rows.Count; i++)
-        {
-            var indexPath = new IndexPath(0, i - 1);
-            if (TreeSource.RowSelection!.IsSelected(indexPath))
-                TreeSource.RowSelection!.Deselect(indexPath);
-            else
-                TreeSource.RowSelection!.Select(indexPath);
-        }
-
-        return true;
     }
 
     public override void Dispose()

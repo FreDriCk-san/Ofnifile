@@ -1,12 +1,11 @@
-﻿using Ofnifile.Interfaces;
-using ReactiveUI;
+﻿using ReactiveUI;
 using System.Reactive;
 
 namespace Ofnifile.ViewModels.TabFeed;
 
 public class IndexFeedVM : ReactiveObject
 {
-    private readonly IExplorerVM _explorerVM;
+    private readonly Interfaces.MessageBus.IMessageBus _messageBus;
 
     public ReactiveCommand<Unit, bool> CopySelectedItemsCommand { get; }
     public ReactiveCommand<Unit, bool> PasteSavedItemsCommand { get; }
@@ -21,20 +20,20 @@ public class IndexFeedVM : ReactiveObject
     public ReactiveCommand<Unit, bool> RevertSelectionCommand { get; }
 
 
-    public IndexFeedVM(IExplorerVM explorerVM)
+    public IndexFeedVM(Interfaces.MessageBus.IMessageBus messageBus)
     {
-        _explorerVM = explorerVM;
+        _messageBus = messageBus;
 
-        CopySelectedItemsCommand = ReactiveCommand.Create(explorerVM.CopySelectedItems);
-        PasteSavedItemsCommand = ReactiveCommand.Create(explorerVM.PasteSavedItems);
-        CutSelectedItemsCommand = ReactiveCommand.Create(explorerVM.CutSelectedItems);
-        CopySelectedItemPathCommand = ReactiveCommand.CreateFromTask(explorerVM.CopySelectedItemPath);
-        DeleteSelectedItemsCommand = ReactiveCommand.Create(explorerVM.DeleteSelectedItems);
-        RenameSelectedItemCommand = ReactiveCommand.Create(explorerVM.RenameSelectedItem);
-        CreateNewFolderCommand = ReactiveCommand.Create(explorerVM.CreateNewFolder);
-        ShowFolderPropertiesCommand = ReactiveCommand.Create(explorerVM.ShowFolderProperties);
-        SelectAllItemsCommand = ReactiveCommand.Create(explorerVM.SelectAllItems);
-        RemoveSelectionCommand = ReactiveCommand.Create(explorerVM.RemoveSelection);
-        RevertSelectionCommand = ReactiveCommand.Create(explorerVM.RevertSelection);
+        //CopySelectedItemsCommand = ReactiveCommand.Create(explorerVM.CopySelectedItems);
+        //PasteSavedItemsCommand = ReactiveCommand.Create(explorerVM.PasteSavedItems);
+        //CutSelectedItemsCommand = ReactiveCommand.Create(explorerVM.CutSelectedItems);
+        //CopySelectedItemPathCommand = ReactiveCommand.CreateFromTask(explorerVM.CopySelectedItemPath);
+        //DeleteSelectedItemsCommand = ReactiveCommand.Create(explorerVM.DeleteSelectedItems);
+        //RenameSelectedItemCommand = ReactiveCommand.Create(explorerVM.RenameSelectedItem);
+        //CreateNewFolderCommand = ReactiveCommand.Create(explorerVM.CreateNewFolder);
+        //ShowFolderPropertiesCommand = ReactiveCommand.Create(explorerVM.ShowFolderProperties);
+        //SelectAllItemsCommand = ReactiveCommand.Create(explorerVM.SelectAllItems);
+        //RemoveSelectionCommand = ReactiveCommand.Create(explorerVM.RemoveSelection);
+        //RevertSelectionCommand = ReactiveCommand.Create(explorerVM.RevertSelection);
     }
 }

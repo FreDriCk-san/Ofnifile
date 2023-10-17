@@ -7,9 +7,9 @@ public class TabFeedVM
     public IndexFeedVM IndexFeedVM { get; init; }
     public VisionFeedVM VisionFeedVM { get; init; }
 
-    public TabFeedVM(IExplorerVM explorerVM)
+    public TabFeedVM(Interfaces.MessageBus.IMessageBus messageBus)
     {
-        IndexFeedVM = new IndexFeedVM(explorerVM);
-        VisionFeedVM = new VisionFeedVM();
+        IndexFeedVM = new IndexFeedVM(messageBus);
+        VisionFeedVM = new VisionFeedVM(messageBus);
     }
 }

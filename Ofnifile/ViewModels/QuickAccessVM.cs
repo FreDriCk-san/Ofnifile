@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Ofnifile.Interfaces;
+using Ofnifile.Interfaces.MessageBus;
 using Ofnifile.Misc;
 using Ofnifile.Models;
 using System;
@@ -15,8 +16,8 @@ public class QuickAccessVM : BaseExplorerVM
     private bool _disposed;
 
     
-    public QuickAccessVM(IList<string> drives, string? selectedPath) 
-        : base(selectedPath)
+    public QuickAccessVM(IList<string> drives, string? selectedPath, Interfaces.MessageBus.IMessageBus messageBus) 
+        : base(selectedPath, messageBus)
     {
         TreeSource = new HierarchicalTreeDataGridSource<IExplorerItem>(Array.Empty<IExplorerItem>())
         {

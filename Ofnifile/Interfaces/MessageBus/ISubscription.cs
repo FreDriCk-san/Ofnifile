@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Ofnifile.Interfaces.MessageBus;
 
 public interface ISubscription<T> where T : IMessage
 {
-    Action<T> Handler { get; }
+    Func<T, Task> Handler { get; }
 }

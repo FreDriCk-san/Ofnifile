@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Ofnifile.Misc.MessageBus;
 
@@ -10,7 +11,7 @@ public class MessageBus : IMessageBus
     private readonly Dictionary<Type, List<object>> _observers = new();
     private bool _isDisposed;
 
-    public void Send<T>(T message) where T : IMessage
+    public async void Send<T>(T message) where T : IMessage
     {
         if (message is null)
             throw new ArgumentNullException(nameof(message));
@@ -27,11 +28,12 @@ public class MessageBus : IMessageBus
             .Select(s => s as ISubscription<T>)
             .Select(s => s!.Handler))
         {
-            handler?.Invoke(message);
+            if (handler is { })
+                await handler.Invoke(message);
         }
     }
 
-    public ISubscription<T>? Subscribe<T>(Action<T> callBack) where T : IMessage
+    public ISubscription<T>? Subscribe<T>(Func<T, Task> callBack) where T : IMessage
     {
         ISubscription<T>? subscription = null;
 

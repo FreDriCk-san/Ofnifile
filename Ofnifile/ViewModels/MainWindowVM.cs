@@ -11,6 +11,7 @@ namespace Ofnifile.ViewModels;
 
 public class MainWindowVM : ReactiveObject, IDisposable
 {
+    private readonly Interfaces.MessageBus.IMessageBus _messageBus;
     private readonly IDisposable _quickVmPathSub;
     private readonly IDisposable _explorerPathSub;
 
@@ -44,17 +45,18 @@ public class MainWindowVM : ReactiveObject, IDisposable
     public ReactiveCommand<Unit, Unit> UndoPathCommand { get; }
     public ReactiveCommand<Unit, Unit> RedoPathCommand { get; }
 
-    public MainWindowVM()
+    public MainWindowVM(Interfaces.MessageBus.IMessageBus messageBus)
     {
+        _messageBus = messageBus;
         Drives = DriveInfo.GetDrives().Select(d => d.Name).ToList();
 
         _selectedPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) 
             ? "C:\\" 
             : Drives.FirstOrDefault() ?? "/";
 
-        QuickAccessVM = new QuickAccessVM(Drives, _selectedPath);
-        ExplorerVM = new ExplorerVM(_selectedPath);
-        TabFeedVM = new TabFeedVM(ExplorerVM);
+        QuickAccessVM = new QuickAccessVM(Drives, _selectedPath, _messageBus);
+        ExplorerVM = new ExplorerVM(_selectedPath, _messageBus);
+        TabFeedVM = new TabFeedVM(ExplorerVM, _messageBus);
 
         _quickVmPathSub = QuickAccessVM.WhenAnyValue(x => x.SelectedPath).Subscribe(SelectedPathHasChanged);
         _explorerPathSub = ExplorerVM.WhenAnyValue(x => x.SelectedPath).Subscribe(SelectedPathHasChanged);
