@@ -4,12 +4,4 @@ using System.Threading.Tasks;
 
 namespace Ofnifile.Misc.MessageBus;
 
-public class Subscription<T> : ISubscription<T> where T : IMessage
-{
-    public Func<T, Task> Handler { get; init; }
-
-    public Subscription(Func<T, Task> func)
-    {
-        Handler = func;
-    }
-}
+public sealed record Subscription<T>(Func<T, Task> Handler, IDisposable Disposable) : ISubscription<T> where T : IMessage;

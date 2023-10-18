@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace Ofnifile.Misc.MessageBus;
@@ -33,44 +35,50 @@ public class MessageBus : IMessageBus
         }
     }
 
-    public ISubscription<T>? Subscribe<T>(Func<T, Task> callBack) where T : IMessage
+    public IDisposable Subscribe<T>(Func<T, Task> callBack) where T : IMessage
     {
-        ISubscription<T>? subscription = null;
-
         var messageType = typeof(T);
-        var subscriptions = _observers.ContainsKey(messageType) 
-            ? _observers[messageType] 
-            : new List<object>();
+
+        ref var subscriptions = ref CollectionsMarshal.GetValueRefOrAddDefault(_observers, messageType, out bool exists)!;
+        if (!exists)
+        {
+            subscriptions = new List<object>();
+        }
 
         var existingSubscription = subscriptions
-                                   .OfType<ISubscription<T>>()
+                                   .Cast<ISubscription<T>>()
                                    .FirstOrDefault(s => s!.Handler == callBack);
 
         if (existingSubscription is null)
         {
-            subscription = new Subscription<T>(callBack);
+            Subscription<T>? subscription = null;
+
+            var d = Disposable.Create(() =>
+            {
+                Unsubscribe(subscription);
+            });
+            subscription = new Subscription<T>(callBack, d);
             subscriptions.Add(subscription);
+            return d;
         }
         else
-            return existingSubscription;
-
-        _observers[messageType] = subscriptions;
-
-        return subscription;
+        {
+            return ((Subscription<T>)existingSubscription).Disposable;
+        }
     }
 
-    public bool Unsubscribe<T>(ISubscription<T> subscription) where T : IMessage
+    private bool Unsubscribe<T>(ISubscription<T> subscription) where T : IMessage
     {
         if (subscription is null)
             return false;
 
         var removed = false;
         var messageType = typeof(T);
-        if (_observers.ContainsKey(messageType))
+        if (_observers.TryGetValue(messageType, out var collection))
         {
-            removed = _observers[messageType].Remove(subscription);
+            collection.Remove(subscription);
 
-            if (_observers[messageType].Count == 0)
+            if (collection.Count == 0)
                 _observers.Remove(messageType);
         }
 
