@@ -14,7 +14,7 @@ namespace Ofnifile.Models;
 
 public class ExplorerItemModel : ReactiveObject, IExplorerItem
 {
-    private readonly FileSystemWatcher _watcher;
+    private FileSystemWatcher _watcher;
 
     private string _path;
     private string _name;
@@ -100,8 +100,14 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
         _isExpanded = isRoot;
         IsDirectory = isDirectory;
         HasChildren = isDirectory;
+        InitFileSync(path);
+    }
 
-        if (isDirectory)
+    private void InitFileSync(string path)
+    {
+        _watcher?.Dispose();
+
+        if (IsDirectory)
         {
             var directoryInfo = new DirectoryInfo(path);
             //Size = directoryInfo.Size();
@@ -151,25 +157,7 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
                     return;
 
                 var child = _children.FirstOrDefault(child => child.Path == e.FullPath);
-                if (child is not { })
-                    return;
-
-                if (child.IsDirectory)
-                {
-                    var directoryInfo = new DirectoryInfo(e.FullPath);
-                    //child.Size = directoryInfo.Size();
-                    child.Modified = directoryInfo.LastWriteTime;
-                    child.Created = directoryInfo.CreationTime;
-                    child.IsHidden = directoryInfo.Attributes.HasFlag(FileAttributes.Hidden);
-                }
-                else
-                {
-                    var fileInfo = new FileInfo(e.FullPath);
-                    child.Size = fileInfo.Length;
-                    child.Modified = fileInfo.LastWriteTime;
-                    child.Created = fileInfo.CreationTime;
-                    child.IsHidden = fileInfo.Attributes.HasFlag(FileAttributes.Hidden);
-                }
+                child?.InitFileSync(e.FullPath);
             });
         }
     }
