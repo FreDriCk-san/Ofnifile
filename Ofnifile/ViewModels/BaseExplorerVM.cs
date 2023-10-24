@@ -1,12 +1,13 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Controls.Primitives;
-using Avalonia.Input;
 using Ofnifile.Interfaces;
 using Ofnifile.Misc.MessageBus;
+using Ofnifile.Models;
 using ReactiveUI;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
@@ -15,6 +16,8 @@ namespace Ofnifile.ViewModels;
 
 public class BaseExplorerVM : ReactiveObject, IDisposable
 {
+    private List<BufferItemModel> _bufferItems = new();
+
     protected readonly Interfaces.MessageBus.IMessageBus _messageBus;
 
     protected string? _selectedPath;
@@ -61,17 +64,96 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
 
     protected bool CutSelectedItems()
     {
-        throw new NotImplementedException();
+        var selectedItems = TreeSource.RowSelection!.SelectedItems!.Where(x => !TreeSource.Items.Contains(x));
+        if (!selectedItems.Any())
+            return false;
+
+        _bufferItems.Clear();
+        foreach (var item in selectedItems)
+        {
+            var bufferModel = new BufferItemModel(Path: item!.Path,
+                                                  IsFolder: item.IsDirectory,
+                                                  IsCopy: false);
+            _bufferItems.Add(bufferModel);
+        }
+        
+        return true;
     }
 
     protected bool CopySelectedItems()
     {
-        throw new NotImplementedException();
+        var selectedItems = TreeSource.RowSelection!.SelectedItems!.Where(x => !TreeSource.Items.Contains(x));
+        if (!selectedItems.Any())
+            return false;
+
+        _bufferItems.Clear();
+        foreach (var item in selectedItems)
+        {
+            var bufferModel = new BufferItemModel(Path: item!.Path,
+                                                  IsFolder: item.IsDirectory,
+                                                  IsCopy: true);
+            _bufferItems.Add(bufferModel);
+        }
+        return true;
     }
 
     protected bool PasteSavedItems()
     {
-        throw new NotImplementedException();
+        if (!_bufferItems.Any() || string.IsNullOrEmpty(SelectedPath))
+            return false;
+
+        var directory = SelectedPath;
+        foreach (var item in _bufferItems)
+        {
+            var path = item.Path;
+            var itemExists = item.IsFolder 
+                ? Directory.Exists(path) 
+                : File.Exists(path);
+
+            if (!itemExists)
+                continue;
+
+            try
+            {
+                if (item.IsFolder)
+                {
+                    var newPath = $"{directory}\\{Path.GetFileNameWithoutExtension(path)!}";
+                    Directory.CreateDirectory(newPath);
+                    RecursiveCopyFiles(path, newPath);
+                }
+                else
+                {
+                    var newPath = $"{directory}\\{Path.GetFileName(path)}";
+                    File.Copy(path, newPath, false);
+                }
+
+                if (!item.IsCopy)
+                {
+                    // TODO: Remove source
+                }
+            }
+            catch (Exception exception)
+            {
+                // ignored
+            }
+        }
+
+        return true;
+    }
+
+    private void RecursiveCopyFiles(string sourcePath, string targetPath)
+    {
+        var options = new EnumerationOptions
+        {
+            IgnoreInaccessible = true,
+            AttributesToSkip = FileAttributes.Hidden | FileAttributes.System | FileAttributes.Temporary
+        };
+
+        foreach (var dirPath in Directory.GetDirectories(sourcePath, "*", options))
+            Directory.CreateDirectory(dirPath.Replace(sourcePath, targetPath));
+
+        foreach (var newPath in Directory.GetFiles(sourcePath, "*", options))
+            File.Copy(newPath, newPath.Replace(sourcePath, targetPath), false);
     }
 
     protected bool DeleteSelectedItems()
