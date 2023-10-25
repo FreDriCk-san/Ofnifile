@@ -102,7 +102,8 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
         if (!_bufferItems.Any() || string.IsNullOrEmpty(SelectedPath))
             return false;
 
-        var directory = SelectedPath;
+        var selectedItem = TreeSource.RowSelection!.SelectedItems!.Where(x => !TreeSource.Items.Contains(x)).FirstOrDefault();
+        var directory = selectedItem?.Path ?? SelectedPath;
         foreach (var item in _bufferItems)
         {
             var path = item.Path;
