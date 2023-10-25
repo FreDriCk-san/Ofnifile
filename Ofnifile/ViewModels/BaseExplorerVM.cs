@@ -120,16 +120,17 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
                     var newPath = $"{directory}\\{Path.GetFileNameWithoutExtension(path)!}";
                     Directory.CreateDirectory(newPath);
                     RecursiveCopyFiles(path, newPath);
+
+                    if (!item.IsCopy)
+                        Directory.Delete(path, true);
                 }
                 else
                 {
                     var newPath = $"{directory}\\{Path.GetFileName(path)}";
                     File.Copy(path, newPath, false);
-                }
 
-                if (!item.IsCopy)
-                {
-                    // TODO: Remove source
+                    if (!item.IsCopy)
+                        File.Delete(path);
                 }
             }
             catch (Exception exception)
