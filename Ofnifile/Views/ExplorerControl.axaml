@@ -39,47 +39,38 @@
               </Style>
             </StackPanel.Styles>
             <FlyoutBase.AttachedFlyout>
-              <Flyout ShowMode="Standard" 
+              <MenuFlyout ShowMode="Standard"  
                       Placement="Pointer">
-                <Border BorderBrush="LightGray"
-                        BorderThickness="1">
-                  <StackPanel KeyboardNavigation.TabNavigation="Continue">
-                    <MenuItem Theme="{StaticResource BaseMenuItem}"
+                <MenuItem Theme="{StaticResource BaseMenuItem}"
                               Header="Cut"
                               Command="{Binding $parent[UserControl].DataContext.CutSelectedItemsCommand}"
                               >
-                      <Interaction.Behaviors>
-                        <bhv:FocusOnLoadedBehavior/>
-                      </Interaction.Behaviors>
-                    </MenuItem>
-                    <MenuItem Theme="{StaticResource BaseMenuItem}"
-                              Header="Copy"
-                              Command="{Binding $parent[UserControl].DataContext.CopySelectedItemsCommand}"
+                </MenuItem>
+                <MenuItem Theme="{StaticResource BaseMenuItem}"
+                          Header="Copy"
+                          Command="{Binding $parent[UserControl].DataContext.CopySelectedItemsCommand}"
                             />
-                    <Border Height="1" 
-                            Margin="4" 
-                            Background="LightGray"
-                            IsVisible="{Binding IsDirectory}"
+                
+                <MenuItem Header="-" 
+                          IsVisible="{Binding IsDirectory}"/>
+                
+                <MenuItem Theme="{StaticResource BaseMenuItem}"
+                          Header="Paste"
+                          IsVisible="{Binding IsDirectory}"
+                          Command="{Binding $parent[UserControl].DataContext.PasteSavedItemsCommand}"
                             />
-                    <MenuItem Theme="{StaticResource BaseMenuItem}"
-                              Header="Paste"
-                              IsVisible="{Binding IsDirectory}"
-                              Command="{Binding $parent[UserControl].DataContext.PasteSavedItemsCommand}"
+                
+                <MenuItem Header="-"/>
+                
+                <MenuItem Theme="{StaticResource BaseMenuItem}"
+                          Header="Delete"
+                          Command="{Binding $parent[UserControl].DataContext.DeleteSelectedItemsCommand}"
                             />
-                    <Border Height="1"
-                            Margin="4"
-                            Background="LightGray" />
-                    <MenuItem Theme="{StaticResource BaseMenuItem}"
-                              Header="Delete"
-                              Command="{Binding $parent[UserControl].DataContext.DeleteSelectedItemsCommand}"
+                <MenuItem Theme="{StaticResource BaseMenuItem}"
+                          Header="Rename"
+                          Command="{Binding $parent[UserControl].DataContext.RenameSelectedItemCommand}"
                             />
-                    <MenuItem Theme="{StaticResource BaseMenuItem}"
-                              Header="Rename"
-                              Command="{Binding $parent[UserControl].DataContext.RenameSelectedItemCommand}"
-                            />
-                  </StackPanel>
-                </Border>
-              </Flyout>
+              </MenuFlyout>
             </FlyoutBase.AttachedFlyout>
             
             
