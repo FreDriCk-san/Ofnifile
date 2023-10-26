@@ -13,7 +13,7 @@ public class MessageBus : IMessageBus
     private readonly Dictionary<Type, List<object>> _observers = new();
     private bool _isDisposed;
 
-    public async Task Send<T>(T message) where T : IMessage
+    public async Task SendAsync<T>(T message) where T : IMessage
     {
         if (message is null)
             throw new ArgumentNullException(nameof(message));

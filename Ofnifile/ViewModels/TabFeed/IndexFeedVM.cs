@@ -27,26 +27,26 @@ public class IndexFeedVM : ReactiveObject
         _messageBus = messageBus;
 
         CopySelectedItemsCommand = ReactiveCommand.CreateFromTask(
-            x => _messageBus.Send(new CopySelectedItems(ExplorerType.Explorer)));
+            x => _messageBus.SendAsync(new CopySelectedItems(ExplorerType.Explorer)));
         PasteSavedItemsCommand = ReactiveCommand.CreateFromTask(
-            x => _messageBus.Send(new PasteSavedItems(ExplorerType.Explorer)));
+            x => _messageBus.SendAsync(new PasteSavedItems(ExplorerType.Explorer)));
         CutSelectedItemsCommand = ReactiveCommand.CreateFromTask(
-            x => _messageBus.Send(new CutSelectedItems(ExplorerType.Explorer)));
+            x => _messageBus.SendAsync(new CutSelectedItems(ExplorerType.Explorer)));
         CopySelectedItemPathCommand = ReactiveCommand.CreateFromTask(
-            async x => await _messageBus.Send(new CopySelectedItemPath(ExplorerType.Explorer)));
+            async x => await _messageBus.SendAsync(new CopySelectedItemPath(ExplorerType.Explorer)));
         DeleteSelectedItemsCommand = ReactiveCommand.CreateFromTask(
-            x => _messageBus.Send(new DeleteSelectedItems(ExplorerType.Explorer)));
+            x => _messageBus.SendAsync(new DeleteSelectedItems(ExplorerType.Explorer)));
         RenameSelectedItemCommand = ReactiveCommand.CreateFromTask(
-            x => _messageBus.Send(new RenameLastSelectedItem(ExplorerType.Explorer)));
+            x => _messageBus.SendAsync(new RenameLastSelectedItem(ExplorerType.Explorer)));
         CreateNewFolderCommand = ReactiveCommand.CreateFromTask(
-            x => _messageBus.Send(new CreateNewFolder(ExplorerType.Explorer)));
+            x => _messageBus.SendAsync(new CreateNewFolder(ExplorerType.Explorer)));
         ShowFolderPropertiesCommand = ReactiveCommand.CreateFromTask(
-            x => _messageBus.Send(new ShowFolderProperties(ExplorerType.Explorer)));
+            x => _messageBus.SendAsync(new ShowFolderProperties(ExplorerType.Explorer)));
         SelectAllItemsCommand = ReactiveCommand.CreateFromTask(
-            x => _messageBus.Send(new SelectAllItems(ExplorerType.Explorer)));
+            x => _messageBus.SendAsync(new SelectAllItems(ExplorerType.Explorer)));
         RemoveSelectionCommand = ReactiveCommand.CreateFromTask(
-            x => _messageBus.Send(new RemoveSelection(ExplorerType.Explorer)));
+            x => _messageBus.SendAsync(new RemoveSelection(ExplorerType.Explorer)));
         RevertSelectionCommand = ReactiveCommand.CreateFromTask(
-            x => _messageBus.Send(new RevertSelection(ExplorerType.Explorer)));
+            x => _messageBus.SendAsync(new RevertSelection(ExplorerType.Explorer)));
     }
 }

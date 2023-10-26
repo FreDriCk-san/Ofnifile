@@ -138,7 +138,7 @@ public class ExplorerVM : BaseExplorerVM
     private Task CopySelectedItemPathCallback(CopySelectedItemPath call)
     {
         if (call.Explorer is ExplorerType.Explorer)
-            return base.CopySelectedItemPath();
+            return base.CopySelectedItemPathAsync();
 
         return Task.CompletedTask;
     }
@@ -146,7 +146,7 @@ public class ExplorerVM : BaseExplorerVM
     private Task CreateNewFolderCallback(CreateNewFolder call)
     {
         if (call.Explorer is ExplorerType.Explorer)
-            base.CreateNewFolder();
+            return base.CreateNewFolderAsync();
 
         return Task.CompletedTask;
     }

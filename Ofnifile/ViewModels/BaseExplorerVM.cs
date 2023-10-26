@@ -50,7 +50,7 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
         PasteSavedItemsCommand = ReactiveCommand.Create(PasteSavedItems);
         DeleteSelectedItemsCommand = ReactiveCommand.Create(DeleteSelectedItems);
         RenameSelectedItemCommand = ReactiveCommand.CreateFromTask(
-            x => _messageBus.Send(new RenameLastSelectedItem(Misc.ExplorerType.Explorer)));
+            x => _messageBus.SendAsync(new RenameLastSelectedItem(Misc.ExplorerType.Explorer)));
     }
 
     private void ChangeSelectedPath()
@@ -170,7 +170,7 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
         return true;
     }
 
-    protected async Task<bool> CopySelectedItemPath()
+    protected async Task<bool> CopySelectedItemPathAsync()
     {
         var lastSelectedItem = TreeSource.RowSelection!.SelectedItems.LastOrDefault();
         if (lastSelectedItem is null)
@@ -189,9 +189,47 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
         return true;
     }
 
-    protected bool CreateNewFolder()
+    protected async Task<bool> CreateNewFolderAsync()
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(SelectedPath))
+            return false;
+
+        DirectoryInfo? newDirectory = null;
+        var newPath = $"{SelectedPath}\\New folder";
+        try
+        {
+            newDirectory = Directory.CreateDirectory(newPath);
+        }
+        catch { }
+
+        if (newDirectory is null)
+            return false;
+
+        // Wait until it shows on explorer tree
+        await Task.Delay(200);
+
+        // Remove existing selection
+        RemoveSelection();
+
+        // Select new folder row
+        IExplorerItem? newItemModel = null;
+        for (int i = 1; i < TreeSource.Rows.Count; i++)
+        {
+            if (TreeSource.Rows[i].Model is IExplorerItem item && item.Path == newPath)
+            {
+                newItemModel = item;
+                TreeSource.RowSelection!.Select(new IndexPath(0, i - 1));
+                break;
+            }
+        }
+
+        if (newItemModel is null)
+            return false;
+
+        // Invoke editor on new folder
+        await _messageBus.SendAsync(new RenameLastSelectedItem(Misc.ExplorerType.Explorer));
+
+        return true;
     }
 
     protected bool ShowFolderProperties()
