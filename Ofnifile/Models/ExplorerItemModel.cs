@@ -115,12 +115,16 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
             Created = directoryInfo.CreationTime;
             IsHidden = directoryInfo.Attributes.HasFlag(FileAttributes.Hidden);
 
-            _watcher = new FileSystemWatcher
+            try
             {
-                Path = _path,
-                NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.Size | NotifyFilters.LastWrite,
-                EnableRaisingEvents = true,
-            };
+                _watcher = new FileSystemWatcher
+                {
+                    Path = _path,
+                    NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.Size | NotifyFilters.LastWrite,
+                    EnableRaisingEvents = true,
+                };
+            }
+            catch { }
         }
         else
         {
@@ -130,19 +134,26 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
             Created = fileInfo.CreationTime;
             IsHidden = fileInfo.Attributes.HasFlag(FileAttributes.Hidden);
 
-            _watcher = new FileSystemWatcher
+            try
             {
-                Path = System.IO.Path.GetDirectoryName(path)!,
-                Filter = System.IO.Path.GetFileName(path),
-                NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.Size | NotifyFilters.LastWrite,
-                EnableRaisingEvents = true,
-            };
+                _watcher = new FileSystemWatcher
+                {
+                    Path = System.IO.Path.GetDirectoryName(path)!,
+                    Filter = System.IO.Path.GetFileName(path),
+                    NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.Size | NotifyFilters.LastWrite,
+                    EnableRaisingEvents = true,
+                };
+            }
+            catch { }
         }
 
-        _watcher.Changed += ItemChanged;
-        _watcher.Created += ItemCreated;
-        _watcher.Deleted += ItemDeleted;
-        _watcher.Renamed += ItemRenamed;
+        if (_watcher is { })
+        {
+            _watcher.Changed += ItemChanged;
+            _watcher.Created += ItemCreated;
+            _watcher.Deleted += ItemDeleted;
+            _watcher.Renamed += ItemRenamed;
+        }
     }
 
     private void ItemChanged(object sender, FileSystemEventArgs e)
@@ -371,7 +382,7 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
             return;
         _disposed = true;
 
-        _watcher.Dispose();
+        _watcher?.Dispose();
 
         if (_children is { })
         {
