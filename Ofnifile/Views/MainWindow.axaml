@@ -2,9 +2,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Ofnifile.ViewModels"
         xmlns:views="using:Ofnifile.Views"
+        xmlns:tabfd="using:Ofnifile.Views.TabFeed"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="450"
         x:Class="Ofnifile.Views.MainWindow"
         x:DataType="vm:MainWindowVM"
         Icon="/Assets/avalonia-logo.ico"
@@ -12,17 +13,38 @@
 
   <Grid>
     <Grid.RowDefinitions>
-      <RowDefinition MaxHeight="150"/>
-      <RowDefinition/>
+      <RowDefinition MaxHeight="160"/>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
 
-    <Grid Grid.Row="0" Background="Red">
-      <TextBlock Text="Feed"/>
-    </Grid>
+    <Border Grid.Row="0" BorderThickness="3,2,3,2" BorderBrush="LightGray">
+      <tabfd:TabFeedControl DataContext="{Binding TabFeedVM}"/>
+    </Border>
 
-    <Grid Grid.Row="1">
+    <Border Grid.Row="1" BorderThickness="0,0,0,1" BorderBrush="LightGray">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="auto"/>
+          <ColumnDefinition Width="0.7*"/>
+          <ColumnDefinition Width="0.3*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0" Orientation="Horizontal">
+          <Button Theme="{StaticResource ArrowLeftThickHorizontalButton}" Margin="4" Command="{Binding UndoPathCommand}"/>
+          <Button Theme="{StaticResource ArrowRightThickHorizontalButton}" Margin="4" Command="{Binding RedoPathCommand}"/>
+        </StackPanel>
+
+        <TextBox Grid.Column="1" Margin="10,0,10,0" Text="{Binding SelectedPath}"/>
+
+        <TextBox Grid.Column="2" Margin="0,0,10,0" Text="Search"/>
+      </Grid>
+    </Border>
+    
+    
+    <Grid Grid.Row="2">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="*" MaxWidth="250"/>
+        <ColumnDefinition Width="*" MaxWidth="300"/>
         <ColumnDefinition Width="auto"/>
         <ColumnDefinition Width="*"/>
       </Grid.ColumnDefinitions>

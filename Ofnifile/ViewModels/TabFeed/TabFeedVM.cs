@@ -1,13 +1,15 @@
-﻿namespace Ofnifile.ViewModels.TabFeed;
+﻿using Ofnifile.Interfaces;
+
+namespace Ofnifile.ViewModels.TabFeed;
 
 public class TabFeedVM
 {
-    private IndexFeedVM _indexFeedVM;
-    private VisionFeedVM _visionFeedVM;
+    public IndexFeedVM IndexFeedVM { get; init; }
+    public VisionFeedVM VisionFeedVM { get; init; }
 
-    public TabFeedVM()
+    public TabFeedVM(Interfaces.MessageBus.IMessageBus messageBus)
     {
-        _indexFeedVM = new IndexFeedVM();
-        _visionFeedVM = new VisionFeedVM();
+        IndexFeedVM = new IndexFeedVM(messageBus);
+        VisionFeedVM = new VisionFeedVM(messageBus);
     }
 }

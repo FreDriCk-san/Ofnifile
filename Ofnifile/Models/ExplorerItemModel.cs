@@ -1,20 +1,24 @@
 ﻿using Avalonia.Collections;
 using Avalonia.Threading;
+using Ofnifile.Extensions;
 using Ofnifile.Interfaces;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reactive;
 
 namespace Ofnifile.Models;
 
 public class ExplorerItemModel : ReactiveObject, IExplorerItem
 {
-    private readonly FileSystemWatcher _watcher;
+    private FileSystemWatcher _watcher;
 
     private string _path;
     private string _name;
+    private string? _oldName;
     private long _size;
     private DateTimeOffset _modified;
     private DateTimeOffset _created;
@@ -36,11 +40,23 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
         private set => this.RaiseAndSetIfChanged(ref _name, value);
     }
 
+    public string? NewName
+    {
+        get => _oldName;
+        private set => this.RaiseAndSetIfChanged(ref _oldName, value);
+    }
+
     public long Size
     {
         get => _size;
-        private set => this.RaiseAndSetIfChanged(ref _size, value);
+        private set
+        {
+            this.RaiseAndSetIfChanged(ref _size, value);
+            this.RaisePropertyChanged(nameof(StringSize));
+        }
     }
+
+    public string? StringSize => IsDirectory ? "" : Size.FileSize();
 
     public DateTimeOffset Modified
     {
@@ -76,6 +92,7 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
 
     public IReadOnlyList<IExplorerItem>? Children => _children ??= LoadChildren();
 
+
     public ExplorerItemModel(string path, bool isDirectory, bool isRoot = false)
     {
         _path = path;
@@ -83,8 +100,14 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
         _isExpanded = isRoot;
         IsDirectory = isDirectory;
         HasChildren = isDirectory;
+        InitFileSync(path);
+    }
 
-        if (isDirectory)
+    private void InitFileSync(string path)
+    {
+        _watcher?.Dispose();
+
+        if (IsDirectory)
         {
             var directoryInfo = new DirectoryInfo(path);
             //Size = directoryInfo.Size();
@@ -92,12 +115,16 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
             Created = directoryInfo.CreationTime;
             IsHidden = directoryInfo.Attributes.HasFlag(FileAttributes.Hidden);
 
-            _watcher = new FileSystemWatcher
+            try
             {
-                Path = _path,
-                NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.Size | NotifyFilters.LastWrite,
-                EnableRaisingEvents = true,
-            };
+                _watcher = new FileSystemWatcher
+                {
+                    Path = _path,
+                    NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.Size | NotifyFilters.LastWrite,
+                    EnableRaisingEvents = true,
+                };
+            }
+            catch { }
         }
         else
         {
@@ -107,19 +134,26 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
             Created = fileInfo.CreationTime;
             IsHidden = fileInfo.Attributes.HasFlag(FileAttributes.Hidden);
 
-            _watcher = new FileSystemWatcher
+            try
             {
-                Path = System.IO.Path.GetDirectoryName(path)!,
-                Filter = System.IO.Path.GetFileName(path),
-                NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.Size | NotifyFilters.LastWrite,
-                EnableRaisingEvents = true,
-            };
+                _watcher = new FileSystemWatcher
+                {
+                    Path = System.IO.Path.GetDirectoryName(path)!,
+                    Filter = System.IO.Path.GetFileName(path),
+                    NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.Size | NotifyFilters.LastWrite,
+                    EnableRaisingEvents = true,
+                };
+            }
+            catch { }
         }
 
-        _watcher.Changed += ItemChanged;
-        _watcher.Created += ItemCreated;
-        _watcher.Deleted += ItemDeleted;
-        _watcher.Renamed += ItemRenamed;
+        if (_watcher is { })
+        {
+            _watcher.Changed += ItemChanged;
+            _watcher.Created += ItemCreated;
+            _watcher.Deleted += ItemDeleted;
+            _watcher.Renamed += ItemRenamed;
+        }
     }
 
     private void ItemChanged(object sender, FileSystemEventArgs e)
@@ -130,26 +164,11 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
         {
             Dispatcher.UIThread.Post(() =>
             {
-                var child = _children!.FirstOrDefault(child => child.Path == e.FullPath);
-                if (child is { })
-                {
-                    if (child.IsDirectory)
-                    {
-                        var directoryInfo = new DirectoryInfo(e.FullPath);
-                        //child.Size = directoryInfo.Size();
-                        child.Modified = directoryInfo.LastWriteTime;
-                        child.Created = directoryInfo.CreationTime;
-                        child.IsHidden = directoryInfo.Attributes.HasFlag(FileAttributes.Hidden);
-                    }
-                    else
-                    {
-                        var fileInfo = new FileInfo(e.FullPath);
-                        child.Size = fileInfo.Length;
-                        child.Modified = fileInfo.LastWriteTime;
-                        child.Created = fileInfo.CreationTime;
-                        child.IsHidden = fileInfo.Attributes.HasFlag(FileAttributes.Hidden);
-                    }
-                }
+                if (_children is null)
+                    return;
+
+                var child = _children.FirstOrDefault(child => child.Path == e.FullPath);
+                child?.InitFileSync(e.FullPath);
             });
         }
     }
@@ -158,9 +177,21 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
     {
         Dispatcher.UIThread.Post(() =>
         {
-            var isDirectory = File.GetAttributes(e.FullPath).HasFlag(FileAttributes.Directory);
-            var child = new ExplorerItemModel(e.FullPath, isDirectory);
-            _children!.Add(child);
+            if (_children is null)
+                return;
+
+            ExplorerItemModel? child = null;
+            if (File.Exists(e.FullPath))
+            {
+                child = new ExplorerItemModel(e.FullPath, isDirectory: false);
+            }
+            else if (Directory.Exists(e.FullPath))
+            {
+                child = new ExplorerItemModel(e.FullPath, isDirectory: true);
+            }
+
+            if (child is { })
+                _children.Add(child);
         });
     }
 
@@ -168,11 +199,15 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
     {
         Dispatcher.UIThread.Post(() =>
         {
-            for (int i = 0; i < _children!.Count; ++i)
+            if (_children is null)
+                return;
+
+            for (int i = 0; i < _children.Count; ++i)
             {
                 if (_children[i].Path == e.FullPath)
                 {
                     // RemoveAt is a little faster than Remove
+                    _children[i].Dispose();
                     _children.RemoveAt(i);
                     break;
                 }
@@ -184,10 +219,10 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
     {
         Dispatcher.UIThread.Post(() =>
         {
-            if (!IsDirectory)
+            if (!IsDirectory || _children is null)
                 return;
 
-            var child = _children!.FirstOrDefault(child => child.Path == e.OldFullPath);
+            var child = _children.FirstOrDefault(child => child.Path == e.OldFullPath);
             if (child is { })
             {
                 child.Path = e.FullPath;
@@ -202,7 +237,11 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
         if (!IsDirectory)
             return children;
 
-        var options = new EnumerationOptions { IgnoreInaccessible = true };
+        var options = new EnumerationOptions 
+        { 
+            IgnoreInaccessible = true,
+            AttributesToSkip = FileAttributes.Hidden | FileAttributes.System | FileAttributes.Temporary
+        };
 
         foreach (var dir in Directory.EnumerateDirectories(Path, "*", options))
             children.Add(new ExplorerItemModel(dir, true));
@@ -215,15 +254,24 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
 
     public void BeginEdit()
     {
-        throw new NotImplementedException();
+        _oldName = Name;
     }
 
     public void CancelEdit()
     {
-        throw new NotImplementedException();
+        if (!string.IsNullOrEmpty(_oldName) && _oldName != Name)
+            Name = _oldName;
+        
+        _oldName = null;
     }
 
     public void EndEdit()
+    {
+        Rename(Name);
+        _oldName = null;
+    }
+
+    public bool Cut()
     {
         throw new NotImplementedException();
     }
@@ -233,19 +281,99 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
         throw new NotImplementedException();
     }
 
-    public bool Cut()
+    public bool Paste()
     {
         throw new NotImplementedException();
     }
 
     public bool Delete()
     {
-        throw new NotImplementedException();
+        // Removal must listen item's parent
+        if (IsDirectory && Directory.Exists(Path))
+        {
+            try
+            {
+                Directory.Delete(Path, true);
+                return true;
+            }
+            catch (Exception exception)
+            {
+                Debug.Fail(exception.Message);
+            }
+        }
+        else if (!IsDirectory && File.Exists(Path))
+        {
+            try
+            {
+                File.Delete(Path);
+                return true;
+            }
+            catch (Exception exception)
+            {
+                Debug.Fail(exception.Message);
+            }
+        }
+
+        return false;
     }
 
-    public bool Rename()
+    public bool Rename(string? newName)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(newName) 
+            || string.IsNullOrEmpty(_oldName) 
+            || newName == _oldName)
+            return false;
+
+        string parentPath;
+        string newPath;
+        if (IsDirectory)
+        {
+            parentPath = new DirectoryInfo(Path).Parent!.FullName;
+            newPath = System.IO.Path.Combine(parentPath, newName);
+
+            if (Directory.Exists(newPath))
+            {
+                Debug.Fail($"Path {newPath} already exists!");
+                return false;
+            }
+
+            try
+            {
+                Directory.Move(Path, newPath);
+            }
+            catch (Exception exception)
+            {
+                Debug.Fail(exception.Message);
+                return false;
+            }
+        }
+        else
+        {
+            var fileInfo = new FileInfo(Path);
+            parentPath = fileInfo.Directory!.FullName;
+            var extension = fileInfo.Extension;
+            if (!newName.Contains(extension))
+                newName = $"{newName}.{extension}";
+            newPath = System.IO.Path.Combine(parentPath, newName);
+
+            if (File.Exists(newPath))
+            {
+                Debug.Fail($"Path {newPath} already exists!");
+                return false;
+            }
+
+            try
+            {
+                File.Move(Path, newPath);
+            }
+            catch (Exception exception)
+            {
+                Debug.Fail(exception.Message);
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public void Dispose()
@@ -254,7 +382,7 @@ public class ExplorerItemModel : ReactiveObject, IExplorerItem
             return;
         _disposed = true;
 
-        _watcher.Dispose();
+        _watcher?.Dispose();
 
         if (_children is { })
         {

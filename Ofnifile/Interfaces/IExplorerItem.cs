@@ -1,6 +1,8 @@
-﻿using System;
+﻿using ReactiveUI;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reactive;
 
 namespace Ofnifile.Interfaces;
 
@@ -17,9 +19,19 @@ public interface IExplorerItem : IDisposable, IEditableObject
     string Name { get; }
 
     /// <summary>
+    /// Item new name created by control
+    /// </summary>
+    string? NewName { get; }
+
+    /// <summary>
     /// Item size
     /// </summary>
     long Size { get; }
+
+    /// <summary>
+    /// Preety view of size property
+    /// </summary>
+    string? StringSize { get; }
 
     /// <summary>
     /// Last modified date
@@ -59,6 +71,7 @@ public interface IExplorerItem : IDisposable, IEditableObject
 
     bool Cut();
     bool Copy();
+    bool Paste();
     bool Delete();
-    bool Rename();
+    bool Rename(string? newName);
 }

@@ -3,35 +3,50 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:Ofnifile.ViewModels"
+             xmlns:i="using:Avalonia.Xaml.Interactivity"
              xmlns:m="using:Ofnifile.Models"
+             xmlns:bhv="using:Ofnifile.Behaviours"
+             xmlns:conv="using:Ofnifile.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="vm:QuickAccessVM"
              x:Class="Ofnifile.Views.QuickAccessControl">
+  <UserControl.Resources>
+    <conv:ItemExplorerToPathConverter x:Key="itemToPathConverter"/>
+  </UserControl.Resources>
+  
   <Grid>
     <TreeDataGrid Source="{Binding TreeSource}">
+      <Interaction.Behaviors>
+        <bhv:PreviewDoubleTappedBehavior HandleEvent="True"
+                                         Command="{Binding ChangeSelectedPathCommand}"/>
+        <bhv:PreviewKeyDownBehavior DownKey="Enter"
+                                    TargetSourceType="{x:Type TreeDataGridExpanderCell}"
+                                    Command="{Binding ChangeSelectedPathCommand}"/>
+      </Interaction.Behaviors>
+      
       <TreeDataGrid.Resources>
-
-        <!-- Template for Name column cells -->
-        <DataTemplate x:Key="ItemNameCell" DataType="m:ExplorerItemModel">
-          <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{Binding Name}" VerticalAlignment="Center">
-              <Interaction.Behaviors>
-                <EventTriggerBehavior EventName="DoubleTapped">
-                  <InvokeCommandAction Command="{Binding $parent[TreeDataGrid].DataContext.ChangeSelectedPathCommand}" 
-                                       CommandParameter="{Binding $self.DataContext}"/>
-                </EventTriggerBehavior>
-              </Interaction.Behaviors>
-            </TextBlock>
+        <!-- Name template -->
+        <DataTemplate x:Key="ItemNameCell" 
+                      DataType="m:ExplorerItemModel">
+          <StackPanel Orientation="Horizontal" 
+                      HorizontalAlignment="Stretch">
+            <Path Width="20" 
+                  Height="20"
+                  VerticalAlignment="Center"
+                  HorizontalAlignment="Center"
+                  Fill="Gray">
+              <Path.Theme>
+                <MultiBinding Converter="{StaticResource itemToPathConverter}">
+                  <Binding Path="IsDirectory"/>
+                  <Binding Path="IsExpanded"/>
+                </MultiBinding>
+              </Path.Theme>
+            </Path>
+            <TextBlock Text="{Binding Name}"
+                       Margin="10,0,0,0"
+                       VerticalAlignment="Center"/>
           </StackPanel>
         </DataTemplate>
-
-        <!-- Edit template for Name column cells -->
-        <DataTemplate x:Key="ItemNameEditCell" DataType="m:ExplorerItemModel">
-          <StackPanel Orientation="Horizontal">
-            <TextBox Text="{Binding Name}" VerticalAlignment="Center"/>
-          </StackPanel>
-        </DataTemplate>
-
       </TreeDataGrid.Resources>
 
       <TreeDataGrid.Styles>
