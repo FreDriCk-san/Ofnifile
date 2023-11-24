@@ -119,8 +119,7 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
                 if (item.IsFolder)
                 {
                     var newPath = $"{directory}\\{Path.GetFileNameWithoutExtension(path)!}";
-                    Directory.CreateDirectory(newPath);
-                    RecursiveCopyFiles(path, newPath);
+                    CopyDirectory(path, newPath);
 
                     if (!item.IsCopy)
                         Directory.Delete(path, true);
@@ -143,7 +142,7 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
         return true;
     }
 
-    private void RecursiveCopyFiles(string sourcePath, string targetPath)
+    private void CopyDirectory(string sourcePath, string targetPath, bool recursive = true)
     {
         var options = new EnumerationOptions
         {
@@ -151,11 +150,31 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
             AttributesToSkip = FileAttributes.Hidden | FileAttributes.System | FileAttributes.Temporary
         };
 
-        foreach (var dirPath in Directory.GetDirectories(sourcePath, "*", options))
-            Directory.CreateDirectory(dirPath.Replace(sourcePath, targetPath));
+        // Get information about the source directory
+        var dir = new DirectoryInfo(sourcePath);
 
-        foreach (var newPath in Directory.GetFiles(sourcePath, "*", options))
-            File.Copy(newPath, newPath.Replace(sourcePath, targetPath), false);
+        // Cache directories before we start copying
+        var dirs = dir.GetDirectories("*", options);
+
+        // Create the destination directory
+        Directory.CreateDirectory(targetPath);
+
+        // Get the files in the source directory and copy to the destination directory
+        foreach (var file in dir.GetFiles("*", options))
+        {
+            var targetFilePath = Path.Combine(targetPath, file.Name);
+            file.CopyTo(targetFilePath);
+        }
+
+        // If recursive and copying subdirectories, recursively call this method
+        if (recursive)
+        {
+            foreach (var subDir in dirs)
+            {
+                var newDestinationDir = Path.Combine(targetPath, subDir.Name);
+                CopyDirectory(subDir.FullName, newDestinationDir, true);
+            }
+        }
     }
 
     protected bool DeleteSelectedItems()
