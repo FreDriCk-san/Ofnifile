@@ -7,6 +7,8 @@ namespace Ofnifile.Behaviours;
 
 public class ShowFlyoutOnPointerPressedBehavior : Behavior<Control>
 {
+    private static FlyoutBase? _lastOpenedFlyout = null;
+
     protected override void OnAttached()
     {
         AssociatedObject!.AddHandler(InputElement.PointerPressedEvent, OnPointerPressed, 
@@ -23,10 +25,15 @@ public class ShowFlyoutOnPointerPressedBehavior : Behavior<Control>
     private void OnPointerPressed(object? sender, PointerEventArgs e)
     {
         var props = e.GetCurrentPoint(AssociatedObject!).Properties;
-        if (!props.IsRightButtonPressed)
+        if (!props.IsRightButtonPressed || FlyoutBase.GetAttachedFlyout(AssociatedObject!) is not { } flyout)
             return;
 
-        FlyoutBase.ShowAttachedFlyout(AssociatedObject!);
+        // Close previously opened flyout (if exists)
+        // Actually this is only for TreeDataGrid
+        _lastOpenedFlyout?.Hide();
+
+        flyout.ShowAt(AssociatedObject!);
+        _lastOpenedFlyout = flyout;
 
         // In case of inner child flyout - uncomment this
         //var childWithFlyout = AssociatedObject!.GetChildControlWithFlyout();

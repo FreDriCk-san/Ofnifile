@@ -20,6 +20,7 @@
         <bhv:PreviewKeyDownBehavior DownKey="Enter"
                                     TargetSourceType="{x:Type TreeDataGridExpanderCell}"
                                     Command="{Binding ChangeSelectedPathCommand}"/>
+        <bhv:ShowFlyoutOnPointerPressedBehavior/>
       </Interaction.Behaviors>
 
       <TreeDataGrid.Resources>
@@ -122,10 +123,26 @@
         <Style Selector="TreeDataGrid TreeDataGridRow:nth-child(2n)">
           <Setter Property="Background"  Value="#20808080"/>
         </Style>
+        <Style Selector="FlyoutPresenter">
+          <Setter Property="Padding" Value="0"/>
+        </Style>
       </TreeDataGrid.Styles>
 
+      <FlyoutBase.AttachedFlyout>
+        <MenuFlyout ShowMode="Standard"
+                Placement="Pointer">
+          
+          <MenuItem Theme="{StaticResource BaseMenuItem}"
+                    Header="Paste"
+                    Command="{Binding $parent[UserControl].DataContext.PasteSavedItemsCommand}"
+                            />
+
+          <MenuItem Header="-"/>
+        </MenuFlyout>
+      </FlyoutBase.AttachedFlyout>
+
     </TreeDataGrid>
-    
+   
   </Grid>
 
 </UserControl>
