@@ -27,6 +27,7 @@
         <DataTemplate x:Key="ItemNameCell" 
                       DataType="m:ExplorerItemModel">
           <StackPanel Orientation="Horizontal" 
+                      Background="Transparent"
                       HorizontalAlignment="Stretch">
             <Interaction.Behaviors>
               <bhv:ShowFlyoutOnPointerPressedBehavior/>
