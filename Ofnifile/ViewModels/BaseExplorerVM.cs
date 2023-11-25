@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Ofnifile.Interfaces;
+using Ofnifile.Misc;
 using Ofnifile.Misc.MessageBus;
 using Ofnifile.Models;
 using ReactiveUI;
@@ -38,9 +39,12 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
     public ReactiveCommand<Unit, bool> DeleteSelectedItemsCommand { get; }
     public ReactiveCommand<Unit, Unit> RenameSelectedItemCommand { get; }
 
+    public ExplorerType ExplorerType { get; }
 
-    public BaseExplorerVM(string? selectedPath, Interfaces.MessageBus.IMessageBus messageBus)
+
+    public BaseExplorerVM(string? selectedPath, Interfaces.MessageBus.IMessageBus messageBus, ExplorerType explorerType)
     {
+        ExplorerType = explorerType;
         _selectedPath = selectedPath;
         _messageBus = messageBus;
 
@@ -50,7 +54,7 @@ public class BaseExplorerVM : ReactiveObject, IDisposable
         PasteSavedItemsCommand = ReactiveCommand.Create(PasteSavedItems);
         DeleteSelectedItemsCommand = ReactiveCommand.Create(DeleteSelectedItems);
         RenameSelectedItemCommand = ReactiveCommand.CreateFromTask(
-            x => _messageBus.SendAsync(new RenameLastSelectedItem(Misc.ExplorerType.Explorer)));
+            x => _messageBus.SendAsync(new RenameLastSelectedItem(ExplorerType)));
     }
 
     private void ChangeSelectedPath()

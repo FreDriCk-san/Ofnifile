@@ -21,7 +21,7 @@ public class ExplorerVM : BaseExplorerVM
     public Interfaces.MessageBus.IMessageBus MessageBus => _messageBus;
 
     public ExplorerVM(string? selectedPath, Interfaces.MessageBus.IMessageBus messageBus) 
-        : base(selectedPath, messageBus)
+        : base(selectedPath, messageBus, ExplorerType.Explorer)
     {
         TreeSource = new HierarchicalTreeDataGridSource<IExplorerItem>(Array.Empty<IExplorerItem>())
         {

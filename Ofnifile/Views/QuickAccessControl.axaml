@@ -15,10 +15,8 @@
   </UserControl.Resources>
   
   <Grid>
-    <TreeDataGrid Source="{Binding TreeSource}">
+    <TreeDataGrid x:Name="Tree" Source="{Binding TreeSource}">
       <Interaction.Behaviors>
-        <bhv:PreviewDoubleTappedBehavior HandleEvent="True"
-                                         Command="{Binding ChangeSelectedPathCommand}"/>
         <bhv:PreviewKeyDownBehavior DownKey="Enter"
                                     TargetSourceType="{x:Type TreeDataGridExpanderCell}"
                                     Command="{Binding ChangeSelectedPathCommand}"/>
@@ -30,6 +28,46 @@
                       DataType="m:ExplorerItemModel">
           <StackPanel Orientation="Horizontal" 
                       HorizontalAlignment="Stretch">
+            <Interaction.Behaviors>
+              <bhv:ShowFlyoutOnPointerPressedBehavior/>
+              <bhv:PreviewDoubleTappedBehavior Command="{Binding $parent[UserControl].DataContext.ChangeSelectedPathCommand}"/>
+            </Interaction.Behaviors>
+            <FlyoutBase.AttachedFlyout>
+              <MenuFlyout ShowMode="Standard"
+                      Placement="Pointer">
+                <MenuItem Theme="{StaticResource BaseMenuItem}"
+                              Header="Cut"
+                              Command="{Binding $parent[UserControl].DataContext.CutSelectedItemsCommand}"
+                              >
+                </MenuItem>
+                <MenuItem Theme="{StaticResource BaseMenuItem}"
+                          Header="Copy"
+                          Command="{Binding $parent[UserControl].DataContext.CopySelectedItemsCommand}"
+                            />
+
+                <MenuItem Header="-"
+                          IsVisible="{Binding IsDirectory}"/>
+
+                <MenuItem Theme="{StaticResource BaseMenuItem}"
+                          Header="Paste"
+                          IsVisible="{Binding IsDirectory}"
+                          Command="{Binding $parent[UserControl].DataContext.PasteSavedItemsCommand}"
+                            />
+
+                <MenuItem Header="-"/>
+
+                <MenuItem Theme="{StaticResource BaseMenuItem}"
+                          Header="Delete"
+                          Command="{Binding $parent[UserControl].DataContext.DeleteSelectedItemsCommand}"
+                            />
+                <MenuItem Theme="{StaticResource BaseMenuItem}"
+                          Header="Rename"
+                          Command="{Binding $parent[UserControl].DataContext.RenameSelectedItemCommand}"
+                            />
+              </MenuFlyout>
+            </FlyoutBase.AttachedFlyout>
+            
+            
             <Path Width="20" 
                   Height="20"
                   VerticalAlignment="Center"
@@ -45,6 +83,31 @@
             <TextBlock Text="{Binding Name}"
                        Margin="10,0,0,0"
                        VerticalAlignment="Center"/>
+          </StackPanel>
+        </DataTemplate>
+
+        <!-- Edit template -->
+        <DataTemplate x:Key="ItemNameEditCell"
+                      DataType="m:ExplorerItemModel">
+          <StackPanel Orientation="Horizontal"
+                      HorizontalAlignment="Stretch">
+            <Path Width="20"
+                  Height="20"
+                  VerticalAlignment="Center"
+                  HorizontalAlignment="Center"
+                  Fill="Gray">
+              <Path.Theme>
+                <MultiBinding Converter="{StaticResource itemToPathConverter}">
+                  <Binding Path="IsDirectory"/>
+                  <Binding Path="IsExpanded"/>
+                </MultiBinding>
+              </Path.Theme>
+            </Path>
+            <TextBox Text="{Binding Name}"
+                     FontSize="14"
+                     Margin="10,0,0,0"
+                     SelectionBrush="LightGray"
+                     VerticalAlignment="Center"/>
           </StackPanel>
         </DataTemplate>
       </TreeDataGrid.Resources>
